@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://31fxfnws65eq"]
+
+[ext_resource type="Script" uid="uid://cfo246rfhwnd5" path="res://kapi.gd" id="1_m0a3u"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_dg0hg"]
+load_path = "res://.godot/imported/tilemap_packed.png-7b301e6705a57389d2cd02d385b33920.ctex"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_m0a3u"]
+size = Vector2(16, 16)
+
+[node name="Kapi" type="Area2D" unique_id=603724182]
+script = ExtResource("1_m0a3u")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1024778921]
+texture = SubResource("CompressedTexture2D_dg0hg")
+region_enabled = true
+region_rect = Rect2(144, 48, 16, 16)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=177368953]
+shape = SubResource("RectangleShape2D_m0a3u")
+
+[node name="SpawnNoktasi" type="Marker2D" parent="." unique_id=1084541588]
+position = Vector2(0, 39)
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

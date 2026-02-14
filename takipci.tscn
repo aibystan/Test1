@@ -1,0 +1,157 @@
+[gd_scene format=3 uid="uid://kgjw0uqj0uoj"]
+
+[ext_resource type="Script" uid="uid://dk43bjxism8l" path="res://takipci.gd" id="1_cek5s"]
+[ext_resource type="Texture2D" uid="uid://bhscrarqymwo7" path="res://universal-lpc-sprite_male_01_walk-3frame_1.png" id="1_toqp3"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cek5s"]
+size = Vector2(20, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nyb65"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(96, 128, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_824ie"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(48, 128, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_omswd"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(0, 128, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m4qw5"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(48, 128, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vldoy"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(0, 64, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u40xr"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(48, 64, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4op41"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(96, 64, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sgylu"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(48, 64, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_87uyu"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(96, 192, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5xcxp"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(48, 192, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lgqhf"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(0, 192, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p0ssl"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(48, 192, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y687k"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(0, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vnleo"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(48, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lc4f4"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(96, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6cww0"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(48, 0, 48, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_wglk4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nyb65")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_824ie")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_omswd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m4qw5")
+}],
+"loop": true,
+"name": &"asagi_yuru",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vldoy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u40xr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4op41")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sgylu")
+}],
+"loop": true,
+"name": &"sag_yuru",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_87uyu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5xcxp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lgqhf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_p0ssl")
+}],
+"loop": true,
+"name": &"sol_yuru",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y687k")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vnleo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lc4f4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6cww0")
+}],
+"loop": true,
+"name": &"yukari_yuru",
+"speed": 5.0
+}]
+
+[node name="Takipci" type="CharacterBody2D" unique_id=1190120645]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1_cek5s")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=418574685]
+position = Vector2(1, 0)
+shape = SubResource("RectangleShape2D_cek5s")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1075509937]
+modulate = Color(1, 0.47058824, 1, 1)
+position = Vector2(1, -30)
+sprite_frames = SubResource("SpriteFrames_wglk4")
+animation = &"asagi_yuru"

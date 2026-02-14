@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://fcopaispd637"]
+
+[node name="CRWhite" type="ColorRect" unique_id=516721695]
+anchors_preset = -1
+anchor_left = 0.014
+anchor_top = 0.822
+anchor_right = 0.994
+anchor_bottom = 0.98600006
+offset_left = 0.03999996
+offset_top = 0.07998657
+offset_right = -0.16003418
+offset_bottom = 0.039978027
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(50, -150)
+pivot_offset_ratio = Vector2(-50, -20)
+
+[node name="CRBlack" type="ColorRect" parent="." unique_id=1596633999]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(5, 5)
+pivot_offset_ratio = Vector2(-5, -5)
+color = Color(0, 0, 0, 1)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CRBlack" unique_id=1060217112]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 3.0
+offset_top = 4.0
+offset_right = -5.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+bbcode_enabled = true
+text = "Hello"

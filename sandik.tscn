@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://brg2hgg6js3jp"]
+
+[ext_resource type="Texture2D" uid="uid://k1h3pb8sa7sf" path="res://tilemap_packed.png" id="1_xalvd"]
+[ext_resource type="Script" uid="uid://cufyppmy4ks7i" path="res://sandik.gd" id="1_yla2c"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yla2c"]
+size = Vector2(14, 15)
+
+[node name="Sandik" type="StaticBody2D" unique_id=245415164 groups=["interactable"]]
+script = ExtResource("1_yla2c")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=2070084516]
+texture = ExtResource("1_xalvd")
+region_enabled = true
+region_rect = Rect2(161, 97, 14, 15)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1346837853]
+shape = SubResource("RectangleShape2D_yla2c")

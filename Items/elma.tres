@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://dc0jljdtjyiqs"]
+
+[ext_resource type="Script" uid="uid://c2wylwtj0vg6g" path="res://ItemData.gd" id="1_x0pnl"]
+
+[resource]
+script = ExtResource("1_x0pnl")
+isim = "Kırmızı Elma"
+aciklama = "Sulu ve lezzetli. Biraz can yeniler."
+etki_degeri = 20
+fiyat = 10
+metadata/_custom_type_script = "uid://c2wylwtj0vg6g"

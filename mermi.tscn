@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://yjcphmcwf7ol"]
+
+[ext_resource type="Script" uid="uid://dvo5hiat63go3" path="res://mermi.gd" id="1_2q5tj"]
+[ext_resource type="Texture2D" uid="uid://0ii0g4nqe5qr" path="res://icon.svg" id="2_inyw2"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fsqo0"]
+size = Vector2(64, 64)
+
+[node name="Mermi" type="Area2D" unique_id=1222234023]
+script = ExtResource("1_2q5tj")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1260984650]
+modulate = Color(0.98314637, 0, 0.21673521, 1)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_inyw2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1992923710]
+shape = SubResource("RectangleShape2D_fsqo0")

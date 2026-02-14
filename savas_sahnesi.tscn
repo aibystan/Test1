@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://2hyo8gn0a5fw"]
+
+[ext_resource type="Script" uid="uid://dtsqf7lcorw4k" path="res://savas_sahnesi.gd" id="1_mldtv"]
+[ext_resource type="PackedScene" uid="uid://7y663nu5uicq" path="res://savas_oyuncusu.tscn" id="2_urhhq"]
+
+[node name="Savas Sahnesi" type="Node2D" unique_id=21708731]
+script = ExtResource("1_mldtv")
+
+[node name="Arkaplan" type="ColorRect" parent="." unique_id=926963622]
+offset_right = 640.0
+offset_bottom = 360.0
+color = Color(0, 0, 0, 1)
+
+[node name="GridKonumlari" type="Node2D" parent="." unique_id=711576960]
+
+[node name="Pos_0_0" type="Marker2D" parent="GridKonumlari" unique_id=1121432473]
+position = Vector2(240, 105)
+
+[node name="Pos_0_1" type="Marker2D" parent="GridKonumlari" unique_id=300770561]
+position = Vector2(317, 105)
+
+[node name="Pos_0_2" type="Marker2D" parent="GridKonumlari" unique_id=1535594641]
+position = Vector2(394, 105)
+
+[node name="Pos_1_0" type="Marker2D" parent="GridKonumlari" unique_id=295378148]
+position = Vector2(240, 179)
+
+[node name="Pos_1_1" type="Marker2D" parent="GridKonumlari" unique_id=1556862630]
+position = Vector2(317, 179)
+
+[node name="Pos_1_2" type="Marker2D" parent="GridKonumlari" unique_id=1146669830]
+position = Vector2(394, 179)
+
+[node name="Pos_2_0" type="Marker2D" parent="GridKonumlari" unique_id=662536023]
+position = Vector2(240, 253)
+
+[node name="Pos_2_1" type="Marker2D" parent="GridKonumlari" unique_id=941278685]
+position = Vector2(317, 253)
+
+[node name="Pos_2_2" type="Marker2D" parent="GridKonumlari" unique_id=1634629713]
+position = Vector2(394, 253)
+
+[node name="SavasOyuncusu" parent="." unique_id=324930502 instance=ExtResource("2_urhhq")]
+position = Vector2(527, 195)
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1535612433]
+anchor_mode = 0

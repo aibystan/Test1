@@ -1,0 +1,108 @@
+[gd_scene format=3 uid="uid://dyray4d77kwbq"]
+
+[ext_resource type="Script" uid="uid://23rh4nifosjs" path="res://savas_ui.gd" id="1_ma5io"]
+[ext_resource type="Texture2D" uid="uid://k1h3pb8sa7sf" path="res://tilemap_packed.png" id="2_7e5rw"]
+
+[node name="SavasUI" type="CanvasLayer" unique_id=195838526]
+script = ExtResource("1_ma5io")
+
+[node name="MainControl" type="Control" parent="." unique_id=1177396085]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainControl" unique_id=717334073]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.73300004
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 0.11999512
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="BtnSaldir" type="Button" parent="MainControl/HBoxContainer" unique_id=920786586]
+layout_mode = 2
+
+[node name="Saldir" type="Label" parent="MainControl/HBoxContainer/BtnSaldir" unique_id=1168720671]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="BtnSihir" type="Button" parent="MainControl/HBoxContainer" unique_id=2123291019]
+layout_mode = 2
+
+[node name="Sihir" type="Label" parent="MainControl/HBoxContainer/BtnSihir" unique_id=1854058839]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="BtnEylem" type="Button" parent="MainControl/HBoxContainer" unique_id=1338082147]
+layout_mode = 2
+
+[node name="Eylem" type="Label" parent="MainControl/HBoxContainer/BtnEylem" unique_id=1217377747]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="BtnItem" type="Button" parent="MainControl/HBoxContainer" unique_id=1067375485]
+layout_mode = 2
+
+[node name="Item" type="Label" parent="MainControl/HBoxContainer/BtnItem" unique_id=874814195]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="BtnInsaf" type="Button" parent="MainControl/HBoxContainer" unique_id=418607252]
+layout_mode = 2
+
+[node name="Insaf" type="Label" parent="MainControl/HBoxContainer/BtnInsaf" unique_id=264973390]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="SecimOku" type="Sprite2D" parent="MainControl" unique_id=1030785097]
+texture = ExtResource("2_7e5rw")
+region_enabled = true
+region_rect = Rect2(117, 130, 6, 6)
+
+[node name="PanelKarakter1" type="Panel" parent="." unique_id=1401251784]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HP" type="Label" parent="PanelKarakter1" unique_id=1923719944]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Qut" type="Label" parent="PanelKarakter1" unique_id=1681651881]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="GP" type="Label" parent="PanelKarakter1" unique_id=686995935]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="PanelKarakter2" type="Panel" parent="." unique_id=1304303264]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HP" type="Label" parent="PanelKarakter2" unique_id=2147473995]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Qut" type="Label" parent="PanelKarakter2" unique_id=2120201471]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="GP" type="Label" parent="PanelKarakter2" unique_id=1000716404]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0

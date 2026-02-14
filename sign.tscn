@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://c40vhtyb5b0cp"]
+
+[ext_resource type="Texture2D" uid="uid://k1h3pb8sa7sf" path="res://tilemap_packed.png" id="1_mbcot"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_824ie"]
+size = Vector2(16, 14)
+
+[node name="Sign" type="StaticBody2D" unique_id=1015951102 groups=["interactable"]]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1652937255]
+position = Vector2(114, 33)
+texture = ExtResource("1_mbcot")
+region_enabled = true
+region_rect = Rect2(80, 114, 16, 14)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=873106434]
+position = Vector2(114, 33)
+shape = SubResource("RectangleShape2D_824ie")

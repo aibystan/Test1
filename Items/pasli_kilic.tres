@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://cn0l01683jfc1"]
+
+[ext_resource type="Script" uid="uid://c2wylwtj0vg6g" path="res://ItemData.gd" id="1_s8hf4"]
+
+[resource]
+script = ExtResource("1_s8hf4")
+kullanabilir_karakterler = Array[String](["Ryu"])
+isim = "Paslı Kılıç"
+aciklama = "Eski ama hala kesiyor. Saldırı gücünü artırır."
+tur = 1
+etki_degeri = 5
+fiyat = 150
+metadata/_custom_type_script = "uid://c2wylwtj0vg6g"

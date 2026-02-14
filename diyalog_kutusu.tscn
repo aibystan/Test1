@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://burhf1mlm0ve7"]
+
+[ext_resource type="Script" uid="uid://ctofm3luixa52" path="res://diyalog_kutusu.gd" id="1_8xoyw"]
+
+[node name="DiyalogKutusu" type="CanvasLayer" unique_id=629355171]
+script = ExtResource("1_8xoyw")
+
+[node name="Arkaplan" type="ColorRect" parent="." unique_id=786036404]
+anchors_preset = -1
+anchor_left = 0.014
+anchor_top = 0.822
+anchor_right = 0.994
+anchor_bottom = 0.98600006
+offset_left = 0.03999996
+offset_top = 0.07998657
+offset_right = -0.16003418
+offset_bottom = 0.039978027
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(50, -150)
+pivot_offset_ratio = Vector2(-50, 20)
+
+[node name="CRBlack" type="ColorRect" parent="Arkaplan" unique_id=324429124]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.003
+anchor_top = 0.034
+anchor_right = 0.99700004
+anchor_bottom = 0.966
+offset_left = 0.11899996
+offset_top = -0.006000042
+offset_right = -0.119018555
+offset_bottom = 0.006000519
+pivot_offset = Vector2(5, 5)
+pivot_offset_ratio = Vector2(-5, -5)
+color = Color(0, 0, 0, 1)
+
+[node name="MetinLabel" type="RichTextLabel" parent="Arkaplan" unique_id=1497477616]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0050000004
+anchor_top = 0.07300001
+anchor_right = 0.99200004
+anchor_bottom = 0.92700005
+offset_left = 1.8649998
+offset_top = 1.6929998
+offset_right = 1.9639282
+offset_bottom = 1.7229996
+
+[node name="IsimLabel" type="Label" parent="Arkaplan" unique_id=633633020]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.091000006
+anchor_top = -0.455
+anchor_right = 0.186
+anchor_bottom = -0.036000002
+offset_left = 1.942997
+offset_top = 3.8450012
+offset_right = 1.7579956
+offset_bottom = 3.7999988

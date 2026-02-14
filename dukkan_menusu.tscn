@@ -1,0 +1,89 @@
+[gd_scene format=3 uid="uid://dgyampvd8x3vh"]
+
+[ext_resource type="Script" uid="uid://duwe7331xm844" path="res://dukkan_menusu.gd" id="1_k84eb"]
+
+[node name="DukkanMenusu" type="CanvasLayer" unique_id=1622702482]
+process_mode = 3
+layer = 101
+script = ExtResource("1_k84eb")
+
+[node name="Arkaplan" type="ColorRect" parent="." unique_id=1302729355]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.78431374)
+
+[node name="SolPanel" type="Panel" parent="." unique_id=1234616969]
+anchors_preset = -1
+anchor_right = 0.5
+anchor_bottom = 1.0
+grow_vertical = 2
+
+[node name="KaydirmaKutusu" type="ScrollContainer" parent="SolPanel" unique_id=223399]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 9.0
+offset_top = 10.0
+offset_right = -11.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="EsyaListesi" type="VBoxContainer" parent="SolPanel/KaydirmaKutusu" unique_id=1262250665]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SablonLabel" type="Label" parent="SolPanel/KaydirmaKutusu/EsyaListesi" unique_id=1715712211]
+visible = false
+layout_mode = 2
+text = "Şablon Ürün (100 G)"
+
+[node name="SagPanel" type="Panel" parent="." unique_id=1731893756]
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -320.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="AltinLabel" type="Label" parent="SagPanel" unique_id=373643415]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.294
+offset_bottom = 0.16000366
+text = "Paranız: 500 G"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AltPanel" type="Panel" parent="." unique_id=858620706]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -107.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="AciklamaLabel" type="RichTextLabel" parent="AltPanel" unique_id=199174151]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.008
+anchor_top = 0.052
+anchor_right = 0.99200004
+anchor_bottom = 0.9480001
+offset_left = 0.03999996
+offset_top = -0.04400015
+offset_right = -0.040039063
+offset_bottom = 0.04399109
+grow_horizontal = 2
+grow_vertical = 2
+text = "Bir kırmızı elma. Çok lezzetli görünüyor."

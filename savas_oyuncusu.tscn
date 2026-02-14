@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://7y663nu5uicq"]
+
+[ext_resource type="Script" uid="uid://bdk4xyf1tkyld" path="res://savas_oyuncusu.gd" id="1_f3lon"]
+[ext_resource type="Texture2D" uid="uid://0ii0g4nqe5qr" path="res://icon.svg" id="2_hukjl"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_t4dss"]
+size = Vector2(34, 34)
+
+[node name="SavasOyuncusu" type="Area2D" unique_id=324930502]
+script = ExtResource("1_f3lon")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1780554433]
+position = Vector2(0, -2.2737368e-13)
+scale = Vector2(0.265625, 0.2578125)
+texture = ExtResource("2_hukjl")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1733062438]
+shape = SubResource("RectangleShape2D_t4dss")
