@@ -13,19 +13,17 @@ var diyalog_listesi = []
 var suanki_satir_index = 0
 var yaziyor = false
 var tween
-var input_bekleme = false # YENİ: Tuşlara hemen basılmasın diye kilit
-var kapaninca_calisacak_fonksiyon: Callable = Callable() # YENİ: Tüccar için hafıza
+var input_bekleme = false
+var kapaninca_calisacak_fonksiyon: Callable = Callable()
 
 func _ready():
 	visible = false
 	process_mode = Node.PROCESS_MODE_ALWAYS 
 
-# --- BAŞLAT (GÜNCELLENDİ: "sonraki_islem" parametresi eklendi) ---
 func baslat(isim, gelen_mesaj, sonraki_islem: Callable = Callable()):
 	if visible: return
 	yazi_alani.visible_ratio = 0 
-	yazi_alani.text = "" # Garanti olsun diye içini de boşaltalım
-	# Hafızaya at (Eğer varsa diyalog bitince bu fonksiyonu çalıştıracağız)
+	yazi_alani.text = ""
 	kapaninca_calisacak_fonksiyon = sonraki_islem
 	
 	# 1. Oyunu Durdur
@@ -42,8 +40,7 @@ func baslat(isim, gelen_mesaj, sonraki_islem: Callable = Callable()):
 	else:
 		diyalog_listesi = gelen_mesaj
 	
-	# 4. YENİ: Hemen tuş algılamayı kapat (0.2 sn bekle)
-	# Böylece açtığımız tuşla (Z) yazıyı yanlışlıkla geçmeyiz.
+	# 4. Input bekleme
 	input_bekleme = true
 	await get_tree().create_timer(0.2).timeout
 	input_bekleme = false
@@ -72,7 +69,7 @@ func _yazim_bitti():
 
 func _process(_delta):
 	if not visible: return
-	if input_bekleme: return # Kilitliyse tuşlara bakma
+	if input_bekleme: return
 
 	# X Tuşu: Hızlıca tamamla
 	if Input.is_action_just_pressed("tus_x"):
@@ -95,13 +92,16 @@ func kutuyu_kapat():
 	visible = false
 	if tween: tween.kill()
 	
+	# ÖNEMLİ: Input'u temizle - bir sonraki frame'de Z basılı kalmasın
+	Input.action_release("tus_z")
+	
 	# Oyunu devam ettir
 	get_tree().paused = false
 	
 	# Sinyali gönder
 	diyalog_bitti.emit()
 	
-	# YENİ: Eğer bir görev (Tüccar menüsü vb.) varsa onu çalıştır
+	# Eğer bir görev varsa onu çalıştır
 	if kapaninca_calisacak_fonksiyon.is_valid():
 		kapaninca_calisacak_fonksiyon.call()
-		kapaninca_calisacak_fonksiyon = Callable() # Hafızayı temizle
+		kapaninca_calisacak_fonksiyon = Callable()
