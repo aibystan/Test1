@@ -59,10 +59,14 @@ func _ready():
 		Global.yuklenen_pozisyon = null 
 	
 	# --- TAKİPÇİ AYARLARI ---
-	var takipci = get_node_or_null("Takipci")
+	# Takipçiyi odada bul ve player'ın arkasına yerleştir
+	var takipci = get_parent().get_node_or_null("Takipci")
 	if takipci:
 		takipci.ayak_izleri.clear()
-		takipci.global_position = global_position + Vector2(0, 20)
+		# Player'ın arkasına koy (Y ekseninde biraz aşağıda)
+		takipci.global_position = global_position + Vector2(0, 32)
+		# Hedef olarak kendini ata
+		takipci.hedef = self
 
 func etkilesim_kontrol():
 	if etkilesim_isini.is_colliding():
