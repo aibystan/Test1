@@ -22,22 +22,6 @@ region = Rect2(0, 128, 48, 64)
 atlas = ExtResource("1_toqp3")
 region = Rect2(48, 128, 48, 64)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_vldoy"]
-atlas = ExtResource("1_toqp3")
-region = Rect2(0, 64, 48, 64)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_u40xr"]
-atlas = ExtResource("1_toqp3")
-region = Rect2(48, 64, 48, 64)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_4op41"]
-atlas = ExtResource("1_toqp3")
-region = Rect2(96, 64, 48, 64)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_sgylu"]
-atlas = ExtResource("1_toqp3")
-region = Rect2(48, 64, 48, 64)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_87uyu"]
 atlas = ExtResource("1_toqp3")
 region = Rect2(96, 192, 48, 64)
@@ -53,6 +37,22 @@ region = Rect2(0, 192, 48, 64)
 [sub_resource type="AtlasTexture" id="AtlasTexture_p0ssl"]
 atlas = ExtResource("1_toqp3")
 region = Rect2(48, 192, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vldoy"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(0, 64, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u40xr"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(48, 64, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4op41"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(96, 64, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sgylu"]
+atlas = ExtResource("1_toqp3")
+region = Rect2(48, 64, 48, 64)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_y687k"]
 atlas = ExtResource("1_toqp3")
@@ -86,24 +86,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_m4qw5")
 }],
 "loop": true,
-"name": &"asagi_yuru",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_vldoy")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_u40xr")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_4op41")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_sgylu")
-}],
-"loop": true,
-"name": &"sag_yuru",
+"name": &"walk_down",
 "speed": 5.0
 }, {
 "frames": [{
@@ -120,7 +103,24 @@ animations = [{
 "texture": SubResource("AtlasTexture_p0ssl")
 }],
 "loop": true,
-"name": &"sol_yuru",
+"name": &"walk_left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vldoy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u40xr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4op41")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sgylu")
+}],
+"loop": true,
+"name": &"walk_right",
 "speed": 5.0
 }, {
 "frames": [{
@@ -137,7 +137,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_6cww0")
 }],
 "loop": true,
-"name": &"yukari_yuru",
+"name": &"walk_up",
 "speed": 5.0
 }]
 
@@ -154,4 +154,4 @@ shape = SubResource("RectangleShape2D_cek5s")
 modulate = Color(1, 0.47058824, 1, 1)
 position = Vector2(1, -30)
 sprite_frames = SubResource("SpriteFrames_wglk4")
-animation = &"asagi_yuru"
+animation = &"walk_down"
