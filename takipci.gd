@@ -4,10 +4,12 @@ extends CharacterBody2D
 
 # --- AYARLAR ---
 var hiz = 150            # Player hızıyla AYNI olsun
-var iz_sikligi = 8       # Her 8 pikselde bir iz bırak
-var takip_gecikmesi = 8  # Daha fazla mesafe bırak
+var iz_sikligi = 12      # Daha seyrek iz - titreme azalır
+var takip_gecikmesi = 3 # Daha fazla mesafe
+var minimum_hareket_mesafesi = 8  # Bu mesafeden azsa hareket etme
 
 var ayak_izleri = [] 
+var son_animasyon = ""  # Son oynatılan animasyonu hatırla
 @onready var anim_sprite = $AnimatedSprite2D
 
 func _ready():
@@ -23,30 +25,43 @@ func _physics_process(_delta):
 	if not ayak_izleri.is_empty():
 		son_nokta = ayak_izleri.back()
 		
+	# Sadece yeterince uzaklaştıysa kaydet
 	if hedef.global_position.distance_to(son_nokta) > iz_sikligi or ayak_izleri.is_empty():
-		# Oyuncu gerçekten hareket ediyor mu?
 		if hedef.velocity.length() > 10:
 			ayak_izleri.append(hedef.global_position)
 	
-	# İz listesi çok uzarsa kısalt (optimizasyon)
+	# İz listesi çok uzarsa kısalt
 	if ayak_izleri.size() > 50:
 		ayak_izleri.pop_front()
 
 	# --- 2. HAREKET SİSTEMİ ---
 	if ayak_izleri.size() > takip_gecikmesi:
 		var gidilecek_nokta = ayak_izleri[0]
-		var yon = global_position.direction_to(gidilecek_nokta)
 		var mesafe_hedefe = global_position.distance_to(gidilecek_nokta)
 		
+		# Çok yakınsa noktayı sil ve bir sonrakine geç
+		if mesafe_hedefe < minimum_hareket_mesafesi:
+			ayak_izleri.pop_front()
+			if ayak_izleri.is_empty():
+				velocity = Vector2.ZERO
+				if anim_sprite.is_playing():
+					anim_sprite.stop()
+					anim_sprite.frame = 1
+				return
+			gidilecek_nokta = ayak_izleri[0]
+			mesafe_hedefe = global_position.distance_to(gidilecek_nokta)
+		
+		# Normal hareket
+		var yon = global_position.direction_to(gidilecek_nokta)
 		velocity = yon * hiz
 		move_and_slide()
 		
-		# Animasyonu oynat
-		if velocity.length() > 10:
+		# Animasyonu oynat (sadece gerçekten hareket varsa)
+		if velocity.length() > 20:
 			animasyon_oynat(yon)
 		
-		# Noktaya vardıysak sil
-		if mesafe_hedefe < 12:
+		# Hedefe vardıysa noktayı sil
+		if mesafe_hedefe < 8:
 			ayak_izleri.pop_front()
 			
 	else:
@@ -54,22 +69,31 @@ func _physics_process(_delta):
 		velocity = Vector2.ZERO
 		if anim_sprite.is_playing():
 			anim_sprite.stop()
-			anim_sprite.frame = 1  # Duruş karesi
+			anim_sprite.frame = 1
+		son_animasyon = ""
 
 	# --- 3. DERİNLİK AYARI (Y-SORT) ---
-	# Takipçi player'ın arkasında kalmalı
 	if hedef:
-		# Y pozisyonuna göre z_index ayarla
 		z_index = int(global_position.y)
 
 func animasyon_oynat(yon):
-	if abs(yon.x) > abs(yon.y): # Yatay hareket
+	var yeni_animasyon = ""
+	
+	# Hangi animasyon oynatılacak?
+	if abs(yon.x) > abs(yon.y):
+		# Yatay hareket dominant
 		if yon.x > 0:
-			anim_sprite.play("walk_right")
+			yeni_animasyon = "walk_right"
 		else:
-			anim_sprite.play("walk_left")
-	else: # Dikey hareket
+			yeni_animasyon = "walk_left"
+	else:
+		# Dikey hareket dominant
 		if yon.y > 0:
-			anim_sprite.play("walk_down")
+			yeni_animasyon = "walk_down"
 		else:
-			anim_sprite.play("walk_up")
+			yeni_animasyon = "walk_up"
+	
+	# Sadece animasyon değiştiyse yeni animasyonu başlat
+	if yeni_animasyon != son_animasyon:
+		anim_sprite.play(yeni_animasyon)
+		son_animasyon = yeni_animasyon
