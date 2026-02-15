@@ -16,9 +16,17 @@ func etkilesime_gec():
 		diyalog_kutusu.baslat("Sandık", ["Sandık boş görünüyor..."])
 		return
 	
-	# --- EKSİK OLAN KISIM GERİ GELDİ ---
+	# --- ENVANTER KAPASİTE KONTROLÜ ---
+	if Global.envanter_dolu_mu():
+		diyalog_kutusu.baslat("Sandık", [
+			"Sandıkta " + icerik.isim + " var!",
+			"Ama çantan dolu... Yer açmalısın!"
+		])
+		return
+	
+	# --- EŞYAYı VER ---
 	acik_mi = true
-	Global.inventory.append(icerik) # Eşyayı ver
+	Global.envantere_ekle(icerik)  # Yeni fonksiyonu kullan
 	sprite.modulate = Color(0.5, 0.5, 0.5) # Görseli karart
 	
 	# Mesajı göster

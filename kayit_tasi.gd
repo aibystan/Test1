@@ -1,16 +1,28 @@
 extends StaticBody2D
 
-# Tabeladaki gibi etkileşime girince çalışacak fonksiyon
 func etkilesime_gec():
-	# 1. Player'ı bul
-	# (Sahnedeki "Player" isimli düğümü arıyoruz)
-	var player = get_tree().current_scene.find_child("Player")
+	# Kayıt menüsünü bul ve aç
+	var kayit_menusu = get_tree().current_scene.find_child("KayitMenusu")
 	
-	if player:
-		# 2. Global'e "Bizi kaydet" emri ver
-		Global.oyunu_kaydet(player.global_position, get_tree().current_scene.scene_file_path)
-		
-		# 3. Diyalog kutusunda mesaj göster
-		return ["Oyun başarıyla kaydedildi.", "Artık güvendesin..."]
+	if kayit_menusu:
+		# Player'ı bul
+		var player = get_tree().current_scene.find_child("Player")
+		if player:
+			# Menüyü aç (pozisyon ve sahne bilgisiyle)
+			kayit_menusu.menuyu_ac(
+				player.global_position,
+				get_tree().current_scene.scene_file_path
+			)
 	else:
-		return ["Hata: Oyuncu bulunamadı!"]
+		# Kayıt menüsü yoksa eski sistem
+		var player = get_tree().current_scene.find_child("Player")
+		if player:
+			Global.oyunu_kaydet(player.global_position, get_tree().current_scene.scene_file_path, 1)
+		
+		# Diyalog göster
+		var diyalog_kutusu = get_tree().current_scene.find_child("DiyalogKutusu")
+		if diyalog_kutusu:
+			diyalog_kutusu.baslat("Kayıt Noktası", [
+				"Oyun kaydedildi!",
+				"HP'n tam oldu!"
+			])

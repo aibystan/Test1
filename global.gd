@@ -10,19 +10,20 @@ var graze_points = 0
 
 var parti_uyeleri = ["Ryu", "Nina"]
 
+# --- ENVANTER SİSTEMİ ---
 var inventory: Array[ItemData] = []
+var MAX_ENVANTER_KAPASITESI = 14
+
 var party_data = [
-	# 1. Karakter (Örn: Savaşçı)
 	{
-		"isim": "Ryu", # Breath of Fire göndermesi ;)
+		"isim": "Ryu",
 		"hp": 100,
 		"max_hp": 100,
 		"atk": 15,
 		"def": 10,
-		"silah": null, # Kuşandığı silah (ItemData olacak)
-		"zirh": null   # Kuşandığı zırh
+		"silah": null,
+		"zirh": null
 	},
-	# 2. Karakter (Örn: Büyücü/Okçu)
 	{
 		"isim": "Nina",
 		"hp": 70,
@@ -34,92 +35,206 @@ var party_data = [
 	}
 ]
 
-# Hangi karakterin statlarına bakıyoruz? (0 = Ryu, 1 = Nina)
 var secili_karakter_index = 0 
-
-# ... (Kaydet/Yükle fonksiyonları aşağıda devam ediyor) ...
-# --- DEĞİŞKENLER ---
 var gidilecek_kapi_ismi = "" 
-var yuklenen_pozisyon = null # Oyun yüklenince nerede doğacağız?
+var yuklenen_pozisyon = null
 
 # --- EKONOMİ ---
-var altin: int = 500 # Oyuna zengin başlayalım :)
+var altin: int = 500
 
-# Kayıt dosyasının yolu (Bilgisayarın gizli klasörlerine kaydeder)
-const KAYIT_DOSYASI = "user://oyun_kaydi.save"
+# --- KAYIT SİSTEMİ (3 SLOT) ---
+const KAYIT_DOSYASI_1 = "user://oyun_kaydi_slot1.save"
+const KAYIT_DOSYASI_2 = "user://oyun_kaydi_slot2.save"
+const KAYIT_DOSYASI_3 = "user://oyun_kaydi_slot3.save"
 
-# --- KAYDETME FONKSİYONU ---
-func oyunu_kaydet(oyuncu_pozisyonu, sahne_yolu):
-	# 1. Kaydedilecek verileri sözlük (Dictionary) yap
+# --- ENVANTER FONKSİYONLARI ---
+func envantere_ekle(esya: ItemData) -> bool:
+	if inventory.size() >= MAX_ENVANTER_KAPASITESI:
+		print("ENVANTER DOLU! Eşya eklenemedi: ", esya.isim)
+		return false
+	inventory.append(esya)
+	print("Envantere eklendi: ", esya.isim, " (", inventory.size(), "/", MAX_ENVANTER_KAPASITESI, ")")
+	return true
+
+func envanterden_cikar(index: int):
+	if index >= 0 and index < inventory.size():
+		var esya = inventory[index]
+		inventory.remove_at(index)
+		print("Envanterden çıkarıldı: ", esya.isim)
+
+func envanter_dolu_mu() -> bool:
+	return inventory.size() >= MAX_ENVANTER_KAPASITESI
+
+func bos_slot_sayisi() -> int:
+	return MAX_ENVANTER_KAPASITESI - inventory.size()
+
+# --- GELİŞMİŞ KAYDETME FONKSİYONU ---
+func oyunu_kaydet(oyuncu_pozisyonu: Vector2, sahne_yolu: String, slot: int = 1):
+	# Tüm karakterlerin canını full yap
+	for karakter in party_data:
+		karakter["hp"] = karakter["max_hp"]
+	
+	# Envanter verisini hazırla (ItemData'yı path olarak kaydet)
+	var envanter_kaydi = []
+	for esya in inventory:
+		envanter_kaydi.append(esya.resource_path)
+	
+	# Party verilerini hazırla
+	var party_kaydi = []
+	for karakter in party_data:
+		var karakter_verisi = {
+			"isim": karakter["isim"],
+			"hp": karakter["hp"],
+			"max_hp": karakter["max_hp"],
+			"atk": karakter["atk"],
+			"def": karakter["def"],
+			"silah": karakter["silah"].resource_path if karakter["silah"] else null,
+			"zirh": karakter["zirh"].resource_path if karakter["zirh"] else null
+		}
+		party_kaydi.append(karakter_verisi)
+	
+	# Tam veri paketi
 	var veriler = {
 		"poz_x": oyuncu_pozisyonu.x,
 		"poz_y": oyuncu_pozisyonu.y,
-		"sahne": sahne_yolu
+		"sahne": sahne_yolu,
+		"altin": altin,
+		"qut": current_qut,  # Qut kaydediliyor (HP kaydedilmiyor çünkü full oluyor)
+		"graze": graze_points,
+		"envanter": envanter_kaydi,
+		"party": party_kaydi,
+		"secili_karakter": secili_karakter_index,
+		"kayit_zamani": Time.get_datetime_string_from_system()
 	}
 	
-	# 2. Dosyayı yazmak için aç
-	var dosya = FileAccess.open(KAYIT_DOSYASI, FileAccess.WRITE)
+	# Slot'a göre dosya seç
+	var dosya_yolu = KAYIT_DOSYASI_1
+	if slot == 2:
+		dosya_yolu = KAYIT_DOSYASI_2
+	elif slot == 3:
+		dosya_yolu = KAYIT_DOSYASI_3
 	
-	# 3. Veriyi JSON (Metin) formatına çevirip kaydet
+	# Kaydet
+	var dosya = FileAccess.open(dosya_yolu, FileAccess.WRITE)
 	var json_veri = JSON.stringify(veriler)
 	dosya.store_line(json_veri)
 	
-	print("Oyun Kaydedildi! Veri: ", json_veri)
+	print("Oyun Kaydedildi! Slot: ", slot, " Zaman: ", veriler["kayit_zamani"])
+	return true
 
-# --- YÜKLEME FONKSİYONU ---
-func oyunu_yukle():
-	# 1. Dosya var mı diye bak
-	if not FileAccess.file_exists(KAYIT_DOSYASI):
-		print("Kayıt dosyası bulunamadı!")
-		return # Yoksa iptal et
+# --- KAYIT VARMI KONTROLÜ ---
+func kayit_var_mi(slot: int) -> bool:
+	var dosya_yolu = KAYIT_DOSYASI_1
+	if slot == 2:
+		dosya_yolu = KAYIT_DOSYASI_2
+	elif slot == 3:
+		dosya_yolu = KAYIT_DOSYASI_3
+	return FileAccess.file_exists(dosya_yolu)
 
-	# 2. Dosyayı okumak için aç
-	var dosya = FileAccess.open(KAYIT_DOSYASI, FileAccess.READ)
+# --- KAYIT BİLGİSİ AL ---
+func kayit_bilgisi_al(slot: int) -> Dictionary:
+	var dosya_yolu = KAYIT_DOSYASI_1
+	if slot == 2:
+		dosya_yolu = KAYIT_DOSYASI_2
+	elif slot == 3:
+		dosya_yolu = KAYIT_DOSYASI_3
 	
-	# 3. Satırı oku ve JSON'dan geri çevir
+	if not FileAccess.file_exists(dosya_yolu):
+		return {"var": false}
+	
+	var dosya = FileAccess.open(dosya_yolu, FileAccess.READ)
 	var json_veri = dosya.get_line()
 	var veriler = JSON.parse_string(json_veri)
 	
-	# 4. Verileri uygula
 	if veriler:
-		# Yüklenecek pozisyonu hafızaya al (Player sahne açılınca bunu okuyacak)
+		return {
+			"var": true,
+			"zaman": veriler.get("kayit_zamani", "Bilinmiyor"),
+			"sahne": veriler.get("sahne", ""),
+			"altin": veriler.get("altin", 0)
+		}
+	return {"var": false}
+
+# --- GELİŞMİŞ YÜKLEME FONKSİYONU ---
+func oyunu_yukle(slot: int = 1):
+	var dosya_yolu = KAYIT_DOSYASI_1
+	if slot == 2:
+		dosya_yolu = KAYIT_DOSYASI_2
+	elif slot == 3:
+		dosya_yolu = KAYIT_DOSYASI_3
+	
+	if not FileAccess.file_exists(dosya_yolu):
+		print("Slot ", slot, " için kayıt dosyası bulunamadı!")
+		return false
+	
+	var dosya = FileAccess.open(dosya_yolu, FileAccess.READ)
+	var json_veri = dosya.get_line()
+	var veriler = JSON.parse_string(json_veri)
+	
+	if veriler:
+		# Pozisyon
 		yuklenen_pozisyon = Vector2(veriler["poz_x"], veriler["poz_y"])
 		
-		# Sahneyi değiştir (Gecis sistemiyle)
-		# Not: Gecis singleton'ını kullandığımız için hata verirse başına Gecis. koy
+		# Ekonomi ve stats
+		altin = veriler.get("altin", 500)
+		current_qut = veriler.get("qut", 200)
+		graze_points = veriler.get("graze", 0)
+		secili_karakter_index = veriler.get("secili_karakter", 0)
+		
+		# Envanter yükle
+		inventory.clear()
+		for esya_path in veriler.get("envanter", []):
+			var esya = load(esya_path)
+			if esya:
+				inventory.append(esya)
+		
+		# Party yükle
+		var party_verileri = veriler.get("party", [])
+		for i in range(party_verileri.size()):
+			if i < party_data.size():
+				var karakter_veri = party_verileri[i]
+				party_data[i]["hp"] = karakter_veri["hp"]
+				party_data[i]["max_hp"] = karakter_veri["max_hp"]
+				party_data[i]["atk"] = karakter_veri["atk"]
+				party_data[i]["def"] = karakter_veri["def"]
+				
+				# Ekipman yükle
+				if karakter_veri["silah"]:
+					party_data[i]["silah"] = load(karakter_veri["silah"])
+				else:
+					party_data[i]["silah"] = null
+					
+				if karakter_veri["zirh"]:
+					party_data[i]["zirh"] = load(karakter_veri["zirh"])
+				else:
+					party_data[i]["zirh"] = null
+		
+		# Sahneyi değiştir
 		Gecis.sahne_degistir(veriler["sahne"]) 
-		print("Oyun Yüklendi!")
+		print("Oyun Yüklendi! Slot: ", slot)
+		return true
+	return false
+
 func _ready():
-	# TEST: Oyun başlarken envantere eşya ekleyelim.
-	# load() komutuyla yaptığımız .tres dosyalarını yüklüyoruz.
-	
-	# Eğer "Items" klasörü yaptıysan yolları ona göre ayarla:
 	var elma = load("res://Items/elma.tres") 
 	var kilic = load("res://Items/pasli_kilic.tres")
 	
 	if elma and kilic:
-		inventory.append(elma)
-		inventory.append(elma) # İki elmamız olsun
-		inventory.append(kilic)
-		print("Test eşyaları envantere eklendi! Toplam: ", inventory.size())
+		envantere_ekle(elma)
+		envantere_ekle(elma)
+		envantere_ekle(kilic)
+		print("Test eşyaları envantere eklendi! Toplam: ", inventory.size(), "/", MAX_ENVANTER_KAPASITESI)
 	else:
 		print("HATA: Eşya dosyaları bulunamadı! Yolları kontrol et.")
-		
-# ... (Global dosyasının üst kısımları) ...
 
 # --- EŞYA KULLANIM FONKSİYONLARI ---
-
-# 1. Can Doldurma
 func karakteri_iyilestir(miktar):
-	var karakter = party_data[secili_karakter_index] # party_data BURADA tanımlı olduğu için hata vermez
-	
+	var karakter = party_data[secili_karakter_index]
 	karakter["hp"] += miktar
 	if karakter["hp"] > karakter["max_hp"]:
 		karakter["hp"] = karakter["max_hp"]
-		
 	print(karakter["isim"] + " iyileşti. Yeni HP: " + str(karakter["hp"]))
 
-# 2. Ekipman Değiştirme
 func esya_kusan(yeni_esya: ItemData) -> ItemData:
 	var karakter = party_data[secili_karakter_index]
 	var eski_esya = null
