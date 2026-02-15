@@ -51,15 +51,7 @@ func kontrol_et():
 	var onceki_x = grid_x
 	var onceki_y = grid_y
 	
-	# --- YATAY HAREKET (X EKSENİ) ---
-	# DÜZELTME: Tuşların yönünü senin sahnene göre değiştirdik.
-	
-	# SAĞ TUŞU:
-	# Eğer sağa basınca sola gidiyorsa, burada mantığı tersine çeviriyoruz.
-	# Normalde x artmalıydı, ama senin kurulumunda azalması gerekiyor olabilir.
-	# Aşağıdaki kodda: Sağa basınca x'i ARTIRIYORUZ (Standardı budur).
-	# EĞER HALA TERS ÇALIŞIRSA: 'ui_right' ile 'ui_left' yazan yerleri yer değiştir.
-	if Input.is_action_just_pressed("ui_right") and grid_x < 2:
+	if Input.is_action_just_pressed("ui_right") and grid_x < 3:
 		grid_x += 1
 		sprite.flip_h = false 
 	elif Input.is_action_just_pressed("ui_left") and grid_x > 0:
@@ -72,7 +64,7 @@ func kontrol_et():
 	
 	if Input.is_action_just_pressed("ui_up") and grid_y > 0: 
 		grid_y -= 1 # 0'a (Yukarıya) git
-	elif Input.is_action_just_pressed("ui_down") and grid_y < 2: 
+	elif Input.is_action_just_pressed("ui_down") and grid_y < 3: 
 		grid_y += 1 # 2'ye (Aşağıya) git
 		
 	# Konum değiştiyse güncelle

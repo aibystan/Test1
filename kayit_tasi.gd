@@ -13,16 +13,6 @@ func etkilesime_gec():
 				player.global_position,
 				get_tree().current_scene.scene_file_path
 			)
-	else:
-		# Kayıt menüsü yoksa eski sistem
-		var player = get_tree().current_scene.find_child("Player")
-		if player:
-			Global.oyunu_kaydet(player.global_position, get_tree().current_scene.scene_file_path, 1)
-		
-		# Diyalog göster
-		var diyalog_kutusu = get_tree().current_scene.find_child("DiyalogKutusu")
-		if diyalog_kutusu:
-			diyalog_kutusu.baslat("Kayıt Noktası", [
-				"Oyun kaydedildi!",
-				"HP'n tam oldu!"
-			])
+	
+	# ÖNEMLİ: Diyalog döndürme! Kayıt menüsü açılacak, diyalog değil.
+	# Boş return veya hiç return olmamalı

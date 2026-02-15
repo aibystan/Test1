@@ -1,39 +1,33 @@
 extends Node2D
 
-# SavasSahnesi.gd içine ekle
+@onready var battle_manager = $BattleManager
+@onready var battle_ui = $BattleUI
+@onready var grid_node = $GridKonumlari
+@onready var player_node = $SavasOyuncusu
 
-var mermi_sahnesi = preload("res://mermi.tscn") # mermi.tscn dosyan olduğundan emin ol
+func _ready():
+	# Referansları bağla
+	battle_manager.battle_ui = battle_ui
+	battle_manager.grid_node = grid_node
+	battle_manager.player_node = player_node
+	
+	battle_ui.battle_manager = battle_manager
+	
+	# Test: 2 düşmanla savaş başlat
+	test_savas_basla()
 
-func _process(delta):
-	# TEST: 'M' tuşuna basınca orta sıraya mermi at
-	if Input.is_action_just_pressed("tus_m"): # Input Map'ten ekle veya ui_accept kullan
-		test_mermi_at()
-
-# savas_sahnesi.gd
-
-func test_mermi_at():
-	var mermi = mermi_sahnesi.instantiate()
-	add_child(mermi)
+func test_savas_basla():
+	var slime = load("res://Enemies/enemy_slime.tres")
+	var goblin = load("res://Enemies/enemy_goblin.tres")
 	
-	# 1. Rastgele bir hedef satır seç (0: Ön, 1: Orta, 2: Arka)
-	var hedef_satir = randi() % 3
-	
-	# 2. O satırın en sağındaki kutuyu (Sütun 2) bul referans al
-	# İsimlendirmene dikkat et: "Pos_Satir_Sutun" -> "Pos_" + str(hedef_satir) + "_2"
-	var baslangic_node_ismi = "Pos_" + str(hedef_satir) + "_2"
-	var baslangic_node = $GridKonumlari.get_node(baslangic_node_ismi)
-	
-	# 3. Merminin Yüksekliği (Y) o satırla aynı olsun
-	# X'i ise ekranın biraz daha sağında olsun (örneğin node'un +500 sağında)
-	mermi.position = Vector2(baslangic_node.position.x + 500, baslangic_node.position.y)
-	
-	# 4. Mermi Katmanını ve Rengini Seç
-	mermi.katman = randi() % 3 # 0: Alt, 1: Orta, 2: Üst
-	mermi.renk_ayarla()
-	
-	# 5. Görsel Derinlik (Z-Index)
-	# Mermi, hedeflediği satırla aynı derinlikte olmalı ki
-	# Arkadaki karakterin önünden geçerken arkada kalsın.
-	mermi.z_index = 10 - hedef_satir 
-	
-	print("Mermi Geliyor! Hedef Satır: " + str(hedef_satir) + " | Tip: " + str(mermi.katman))
+	if slime and goblin:
+		battle_manager.savas_baslat([slime, goblin])
+	else:
+		print("HATA: Düşman dosyaları bulunamadı!")
+		# Fallback - boş savaş
+		var dummy_enemy = EnemyData.new()
+		dummy_enemy.isim = "Test Düşman"
+		dummy_enemy.max_hp = 30
+		dummy_enemy.current_hp = 30
+		dummy_enemy.atk = 5
+		battle_manager.savas_baslat([dummy_enemy])

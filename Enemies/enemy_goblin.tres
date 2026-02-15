@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://EnemyData.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+isim = "Goblin"
+max_hp = 45
+current_hp = 45
+atk = 8
+def = 4
+renk = Color(0.8, 0.4, 0, 1)
+boyut = Vector2(80, 80)
+acts = Array[String](["Check", "Tehdit Et", "Teklif Ver"])
+baris_kosullari = Array[String](["Teklif Ver", "Teklif Ver"])
+check_mesaji = "GOBLIN - HP 45 ATK 8 DEF 4
+Saldırgan bir yaratık. Pazarlık sever."
+pattern_turu = "orta"
+saldiri_gecikmesi = 1.8

@@ -1,7 +1,10 @@
 [gd_scene format=3 uid="uid://2hyo8gn0a5fw"]
 
 [ext_resource type="Script" uid="uid://dtsqf7lcorw4k" path="res://savas_sahnesi.gd" id="1_mldtv"]
+[ext_resource type="Script" uid="uid://blen20c37wdv" path="res://battle_manager.gd" id="2_ow8yj"]
 [ext_resource type="PackedScene" uid="uid://7y663nu5uicq" path="res://savas_oyuncusu.tscn" id="2_urhhq"]
+[ext_resource type="PackedScene" path="res://battle_ui.tscn" id="3_vlb07"]
+[ext_resource type="Script" uid="uid://cx7irsonxi6h5" path="res://battle_ui.gd" id="4_7j6gx"]
 
 [node name="Savas Sahnesi" type="Node2D" unique_id=21708731]
 script = ExtResource("1_mldtv")
@@ -11,34 +14,71 @@ offset_right = 640.0
 offset_bottom = 360.0
 color = Color(0, 0, 0, 1)
 
+[node name="BattleManager" type="Node" parent="." unique_id=2134233342]
+script = ExtResource("2_ow8yj")
+
+[node name="BattleUI" parent="." unique_id=722093679 instance=ExtResource("3_vlb07")]
+visible = false
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 342.0
+offset_top = 355.0
+offset_right = 342.0
+offset_bottom = 355.0
+grow_horizontal = 1
+grow_vertical = 1
+script = ExtResource("4_7j6gx")
+
 [node name="GridKonumlari" type="Node2D" parent="." unique_id=711576960]
 
 [node name="Pos_0_0" type="Marker2D" parent="GridKonumlari" unique_id=1121432473]
-position = Vector2(240, 105)
+position = Vector2(200, 64)
 
 [node name="Pos_0_1" type="Marker2D" parent="GridKonumlari" unique_id=300770561]
-position = Vector2(317, 105)
+position = Vector2(275, 64)
 
 [node name="Pos_0_2" type="Marker2D" parent="GridKonumlari" unique_id=1535594641]
-position = Vector2(394, 105)
+position = Vector2(352, 64)
+
+[node name="Pos_0_3" type="Marker2D" parent="GridKonumlari" unique_id=1367800854]
+position = Vector2(414, 63)
 
 [node name="Pos_1_0" type="Marker2D" parent="GridKonumlari" unique_id=295378148]
-position = Vector2(240, 179)
+position = Vector2(198, 138)
 
 [node name="Pos_1_1" type="Marker2D" parent="GridKonumlari" unique_id=1556862630]
-position = Vector2(317, 179)
+position = Vector2(275, 138)
 
 [node name="Pos_1_2" type="Marker2D" parent="GridKonumlari" unique_id=1146669830]
-position = Vector2(394, 179)
+position = Vector2(352, 138)
+
+[node name="Pos_1_3" type="Marker2D" parent="GridKonumlari" unique_id=731047708]
+position = Vector2(419, 138)
 
 [node name="Pos_2_0" type="Marker2D" parent="GridKonumlari" unique_id=662536023]
-position = Vector2(240, 253)
+position = Vector2(198, 212)
 
 [node name="Pos_2_1" type="Marker2D" parent="GridKonumlari" unique_id=941278685]
-position = Vector2(317, 253)
+position = Vector2(275, 212)
 
 [node name="Pos_2_2" type="Marker2D" parent="GridKonumlari" unique_id=1634629713]
-position = Vector2(394, 253)
+position = Vector2(352, 212)
+
+[node name="Pos_2_3" type="Marker2D" parent="GridKonumlari" unique_id=292102467]
+position = Vector2(419, 214)
+
+[node name="Pos_3_0" type="Marker2D" parent="GridKonumlari" unique_id=449032751]
+position = Vector2(199, 285)
+
+[node name="Pos_3_1" type="Marker2D" parent="GridKonumlari" unique_id=1190555645]
+position = Vector2(274, 285)
+
+[node name="Pos_3_2" type="Marker2D" parent="GridKonumlari" unique_id=1109009871]
+position = Vector2(354, 284)
+
+[node name="Pos_3_3" type="Marker2D" parent="GridKonumlari" unique_id=1884278728]
+position = Vector2(421, 285)
 
 [node name="SavasOyuncusu" parent="." unique_id=324930502 instance=ExtResource("2_urhhq")]
 position = Vector2(527, 195)

@@ -11,27 +11,25 @@ var kayit_noktasi_sahnesi: String
 var secili_slot = 0  # 0-3: slot1, slot2, slot3, iptal
 var onay_modu = false
 var onaylanan_slot = 0
+var input_kilitli = false  # Input buffer için
 
 var slot_labels = []
 
 func _ready():
 	visible = false
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	
-	# Label'ları diziye koy
 	slot_labels = [slot1_label, slot2_label, slot3_label, iptal_label]
 
 func _process(_delta):
 	if not visible: return
+	if input_kilitli: return  # Input kilitliyse işlem yapma
 	
 	if onay_modu:
 		# Onay modundayken
 		if Input.is_action_just_pressed("tus_z"):
-			# Evet - Kaydet
 			kayit_yap(onaylanan_slot)
 			
 		if Input.is_action_just_pressed("tus_x"):
-			# Hayır - İptal
 			onay_modu = false
 			aciklama_label.text = "Oyununu kaydetmek ister misin?\nHP'n tam olacak!"
 			secimi_guncelle()
@@ -50,17 +48,13 @@ func _process(_delta):
 			secimi_guncelle()
 		
 		if Input.is_action_just_pressed("tus_z"):
-			# Z ile seç
 			if secili_slot == 3:
-				# İptal seçildi
 				menuyu_kapat()
 			else:
-				# Slot seçildi - onay iste
 				onaylanan_slot = secili_slot + 1
 				onay_sor(onaylanan_slot)
 		
 		if Input.is_action_just_pressed("tus_x"):
-			# X ile kapat
 			menuyu_kapat()
 
 func menuyu_ac(pozisyon: Vector2, sahne: String):
@@ -73,19 +67,27 @@ func menuyu_ac(pozisyon: Vector2, sahne: String):
 	secili_slot = 0
 	onay_modu = false
 	
+	# Input kilitini aç (debounce)
+	input_kilitli = true
+	
 	slot_bilgilerini_guncelle()
 	secimi_guncelle()
+	
+	# Kısa bekle, sonra input'a izin ver
+	await get_tree().create_timer(0.3).timeout
+	input_kilitli = false
 
 func menuyu_kapat():
 	visible = false
 	get_tree().paused = false
 	onay_modu = false
+	input_kilitli = false
 
 func slot_bilgilerini_guncelle():
 	# Slot 1
 	var slot1_bilgi = Global.kayit_bilgisi_al(1)
 	if slot1_bilgi["var"]:
-		var zaman_str = str(slot1_bilgi["zaman"])  # String'e çevir
+		var zaman_str = str(slot1_bilgi["zaman"])
 		var zaman_parcalari = zaman_str.split(" ")
 		var saat = zaman_parcalari[1] if zaman_parcalari.size() > 1 else zaman_str
 		slot1_label.text = "Slot 1: " + saat + "\n       " + str(slot1_bilgi["altin"]) + " Altın"
@@ -113,16 +115,14 @@ func slot_bilgilerini_guncelle():
 		slot3_label.text = "Slot 3: Boş"
 
 func secimi_guncelle():
-	# Tüm seçimleri beyaz yap, seçiliyi sarı
 	for i in range(slot_labels.size()):
 		var label_text = slot_labels[i].text
 		
-		# ">" işaretini kaldır
 		if label_text.begins_with("> "):
 			label_text = label_text.substr(2)
 		
 		if i == secili_slot:
-			slot_labels[i].modulate = Color(1, 1, 0)  # Sarı - seçili
+			slot_labels[i].modulate = Color(1, 1, 0)  # Sarı
 			slot_labels[i].text = "> " + label_text
 		else:
 			slot_labels[i].modulate = Color(1, 1, 1)  # Beyaz
@@ -130,29 +130,21 @@ func secimi_guncelle():
 
 func onay_sor(slot: int):
 	onay_modu = true
-	
-	# Slot bilgisi
 	var slot_bilgi = Global.kayit_bilgisi_al(slot)
 	
 	if slot_bilgi["var"]:
-		# Dolu slot - üzerine yazma uyarısı
 		aciklama_label.text = "Slot " + str(slot) + " üzerine yazılacak!\nEmin misin?\n\n(Z = Evet | X = Hayır)"
 	else:
-		# Boş slot - normal onay
 		aciklama_label.text = "Slot " + str(slot) + "'e kaydetmek\nister misin?\n\n(Z = Evet | X = Hayır)"
 
 func kayit_yap(slot: int):
-	# Kaydet
 	Global.oyunu_kaydet(kayit_noktasi_pozisyonu, kayit_noktasi_sahnesi, slot)
 	
-	# Başarı mesajı
 	aciklama_label.text = "Slot " + str(slot) + "'e kaydedildi!\nHP'n tam oldu!"
 	onay_modu = false
 	
-	# Slot bilgilerini güncelle
 	slot_bilgilerini_guncelle()
 	secimi_guncelle()
 	
-	# Bekle ve kapat
 	await get_tree().create_timer(2.0).timeout
 	menuyu_kapat()
