@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://03t20d76pv5a"]
 
-[ext_resource type="Script" path="res://battle_ui.gd" id="1"]
+[ext_resource type="Script" uid="uid://cx7irsonxi6h5" path="res://battle_ui.gd" id="1"]
 
-[node name="BattleUI" type="Control"]
+[node name="BattleUI" type="Control" unique_id=1810473807]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,7 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
 
-[node name="StatsPanel" type="Panel" parent="."]
+[node name="StatsPanel" type="Panel" parent="." unique_id=2077322025]
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
@@ -20,7 +20,7 @@ offset_top = -120.0
 offset_right = 300.0
 grow_vertical = 0
 
-[node name="Karakter1" type="VBoxContainer" parent="StatsPanel"]
+[node name="Karakter1" type="VBoxContainer" parent="StatsPanel" unique_id=731725520]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -34,24 +34,24 @@ offset_bottom = 50.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="IsimLabel" type="Label" parent="StatsPanel/Karakter1"]
+[node name="IsimLabel" type="Label" parent="StatsPanel/Karakter1" unique_id=800948573]
 layout_mode = 2
 text = "Ryu"
 horizontal_alignment = 1
 
-[node name="HPLabel" type="Label" parent="StatsPanel/Karakter1"]
+[node name="HPLabel" type="Label" parent="StatsPanel/Karakter1" unique_id=296666729]
 layout_mode = 2
 text = "HP: 100/100"
 
-[node name="QutLabel" type="Label" parent="StatsPanel/Karakter1"]
+[node name="QutLabel" type="Label" parent="StatsPanel/Karakter1" unique_id=826011805]
 layout_mode = 2
 text = "Qut: 200/200"
 
-[node name="GPLabel" type="Label" parent="StatsPanel/Karakter1"]
+[node name="GPLabel" type="Label" parent="StatsPanel/Karakter1" unique_id=1154668994]
 layout_mode = 2
 text = "GP: %0"
 
-[node name="Karakter2" type="VBoxContainer" parent="StatsPanel"]
+[node name="Karakter2" type="VBoxContainer" parent="StatsPanel" unique_id=198047998]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -65,24 +65,24 @@ offset_bottom = 50.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="IsimLabel" type="Label" parent="StatsPanel/Karakter2"]
+[node name="IsimLabel" type="Label" parent="StatsPanel/Karakter2" unique_id=1243736774]
 layout_mode = 2
 text = "Nina"
 horizontal_alignment = 1
 
-[node name="HPLabel" type="Label" parent="StatsPanel/Karakter2"]
+[node name="HPLabel" type="Label" parent="StatsPanel/Karakter2" unique_id=1955911164]
 layout_mode = 2
 text = "HP: 70/70"
 
-[node name="QutLabel" type="Label" parent="StatsPanel/Karakter2"]
+[node name="QutLabel" type="Label" parent="StatsPanel/Karakter2" unique_id=1228201985]
 layout_mode = 2
 text = "Qut: 150/150"
 
-[node name="GPLabel" type="Label" parent="StatsPanel/Karakter2"]
+[node name="GPLabel" type="Label" parent="StatsPanel/Karakter2" unique_id=301091331]
 layout_mode = 2
 text = "GP: %0"
 
-[node name="AnaMenu" type="HBoxContainer" parent="."]
+[node name="AnaMenu" type="HBoxContainer" parent="." unique_id=601351123]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -97,32 +97,32 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_constants/separation = 10
 
-[node name="SaldirBtn" type="Button" parent="AnaMenu"]
+[node name="SaldirBtn" type="Button" parent="AnaMenu" unique_id=1062023490]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "1. Saldır"
 
-[node name="SihirBtn" type="Button" parent="AnaMenu"]
+[node name="SihirBtn" type="Button" parent="AnaMenu" unique_id=1244798309]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "2. Sihir"
 
-[node name="EylemBtn" type="Button" parent="AnaMenu"]
+[node name="EylemBtn" type="Button" parent="AnaMenu" unique_id=1431745597]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "3. Eylem"
 
-[node name="ItemBtn" type="Button" parent="AnaMenu"]
+[node name="ItemBtn" type="Button" parent="AnaMenu" unique_id=2078340704]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "4. İtem"
 
-[node name="InsafBtn" type="Button" parent="AnaMenu"]
+[node name="InsafBtn" type="Button" parent="AnaMenu" unique_id=453695953]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "5. İnsaf"
 
-[node name="HedefPanel" type="Panel" parent="."]
+[node name="HedefPanel" type="Panel" parent="." unique_id=1402943608]
 visible = false
 layout_mode = 1
 anchors_preset = 8
@@ -137,7 +137,7 @@ offset_bottom = 100.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Label" type="Label" parent="HedefPanel"]
+[node name="Label" type="Label" parent="HedefPanel" unique_id=279764145]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -155,7 +155,7 @@ text = "Hedef Seç:
 
 ←→ Seç | Z Onayla | X İptal"
 
-[node name="ActPanel" type="Panel" parent="."]
+[node name="ActPanel" type="Panel" parent="." unique_id=1587272656]
 visible = false
 layout_mode = 1
 anchors_preset = 8
@@ -170,7 +170,7 @@ offset_bottom = 150.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Label" type="Label" parent="ActPanel"]
+[node name="Label" type="Label" parent="ActPanel" unique_id=316944381]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

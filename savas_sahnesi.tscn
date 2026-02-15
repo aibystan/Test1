@@ -3,8 +3,8 @@
 [ext_resource type="Script" uid="uid://dtsqf7lcorw4k" path="res://savas_sahnesi.gd" id="1_mldtv"]
 [ext_resource type="Script" uid="uid://blen20c37wdv" path="res://battle_manager.gd" id="2_ow8yj"]
 [ext_resource type="PackedScene" uid="uid://7y663nu5uicq" path="res://savas_oyuncusu.tscn" id="2_urhhq"]
-[ext_resource type="PackedScene" path="res://battle_ui.tscn" id="3_vlb07"]
-[ext_resource type="Script" uid="uid://cx7irsonxi6h5" path="res://battle_ui.gd" id="4_7j6gx"]
+[ext_resource type="PackedScene" uid="uid://03t20d76pv5a" path="res://battle_ui.tscn" id="3_vlb07"]
+[ext_resource type="PackedScene" path="res://timing_bar.tscn" id="4_ow8yj"]
 
 [node name="Savas Sahnesi" type="Node2D" unique_id=21708731]
 script = ExtResource("1_mldtv")
@@ -28,7 +28,12 @@ offset_right = 342.0
 offset_bottom = 355.0
 grow_horizontal = 1
 grow_vertical = 1
-script = ExtResource("4_7j6gx")
+
+[node name="TimingBar" parent="." unique_id=1873906857 instance=ExtResource("4_ow8yj")]
+offset_left = 312.0
+offset_top = 187.0
+offset_right = 312.0
+offset_bottom = 187.0
 
 [node name="GridKonumlari" type="Node2D" parent="." unique_id=711576960]
 

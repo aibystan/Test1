@@ -11,6 +11,7 @@ signal savas_bitti(kazanildi: bool)
 var battle_ui: Control
 var grid_node: Node2D
 var player_node: Area2D
+var timing_bar: Control
 
 # --- DÜŞMANLAR ---
 var dusmanlar: Array = []  # {data: EnemyData, node: Node2D}
@@ -20,6 +21,10 @@ var aktif_dusman_sayisi: int = 0
 enum TurnDurumu {PLAYER_1, PLAYER_2, DUSMAN, BEKLEME}
 var suanki_durum: TurnDurumu = TurnDurumu.BEKLEME
 var aktif_karakter_index: int = 0
+
+# Turn fazları
+enum TurnFazi {MENU, GRID}
+var suanki_faz: TurnFazi = TurnFazi.MENU
 
 # --- PLAYER DATA ---
 var player_characters: Array = []  # Global.party_data'dan
@@ -32,6 +37,11 @@ func savas_baslat(dusman_listesi: Array):
 	
 	# Player karakterleri yükle
 	player_characters = Global.party_data.duplicate(true)
+	
+	# Grid'i başta kapat
+	if player_node:
+		player_node.process_mode = Node.PROCESS_MODE_DISABLED
+		player_node.visible = false
 	
 	# Düşmanları spawn et
 	dusmanlar.clear()
@@ -79,10 +89,17 @@ func ilk_player_turn_basla():
 
 func player_turn_basla():
 	suanki_durum = TurnDurumu.PLAYER_1 if aktif_karakter_index == 0 else TurnDurumu.PLAYER_2
+	suanki_faz = TurnFazi.MENU  # Menü fazı
 	turn_basladi.emit(aktif_karakter_index)
+	
+	# Grid'i kapat, menüyü aç
+	if player_node:
+		player_node.process_mode = Node.PROCESS_MODE_DISABLED
+		player_node.visible = false
 	
 	# UI'ye turn başladığını bildir
 	if battle_ui:
+		battle_ui.visible = true
 		battle_ui.turn_menusu_goster(player_characters[aktif_karakter_index])
 
 # PLAYER EYLEM SEÇTİ
@@ -106,20 +123,36 @@ func saldiri_baslat():
 		battle_ui.hedef_secim_goster(dusmanlar)
 
 func hedef_secildi(hedef_index: int):
-	# Şimdilik sabit hasar (Timing bar gelince burası değişecek)
+	# Timing bar başlat
+	if timing_bar:
+		timing_bar.baslat()
+		
+		# Timing bar sinyalini bekle
+		var sonuc = await timing_bar.timing_tamamlandi
+		var kalite = sonuc[0]
+		var carpan = sonuc[1]
+		
+		# Hasar hesapla
+		hasar_ver(hedef_index, carpan)
+	else:
+		# Timing bar yoksa normal hasar
+		hasar_ver(hedef_index, 1.0)
+
+func hasar_ver(hedef_index: int, carpan: float):
 	var karakter = player_characters[aktif_karakter_index]
-	var damage = karakter["atk"]
+	var base_damage = karakter["atk"]
+	var damage = int(base_damage * carpan)
 	
 	if hedef_index < dusmanlar.size():
 		var dusman_dict = dusmanlar[hedef_index]
 		dusman_dict["data"].hasar_al(damage)
 		
-		# HP label güncelle
-		if dusman_dict["node"].has_node("Label"):
+		# HP label güncelle - node hala var mı kontrol et
+		if is_instance_valid(dusman_dict["node"]) and dusman_dict["node"].has_node("Label"):
 			var label = dusman_dict["node"].get_node("Label")
 			label.text = dusman_dict["data"].isim + "\nHP: " + str(dusman_dict["data"].current_hp)
 		
-		print(dusman_dict["data"].isim + " " + str(damage) + " hasar aldı!")
+		print(dusman_dict["data"].isim + " " + str(damage) + " hasar aldı! (x" + str(carpan) + ")")
 		
 		# Öldü mü?
 		if dusman_dict["data"].oldu_mu():
@@ -153,18 +186,57 @@ func player_turn_bitir():
 
 func dusman_turn_basla():
 	suanki_durum = TurnDurumu.DUSMAN
+	suanki_faz = TurnFazi.GRID  # Grid fazı
 	dusman_turn_basladi.emit()
 	
 	print("Düşman saldırıyor!")
 	
-	for dusman_dict in dusmanlar:
-		if not dusman_dict["data"].oldu_mu():
-			print(dusman_dict["data"].isim + ": Grrrr!")
+	# Menüyü kapat, grid'i aç
+	if battle_ui:
+		battle_ui.visible = false
 	
+	if player_node:
+		player_node.process_mode = Node.PROCESS_MODE_ALWAYS
+		player_node.visible = true
 	
-	await get_tree().create_timer(3.0).timeout
+	# Düşman konuşması (basit)
+	await dusman_konusma_goster()
+	
+	# Pattern başlat
+	await dusman_pattern_calistir()
 	
 	dusman_turn_bitir()
+
+func dusman_konusma_goster():
+	# Her düşman kısa bir mesaj söyler
+	for dusman_dict in dusmanlar:
+		if not dusman_dict["data"].oldu_mu():
+			var mesaj = dusman_dict["data"].isim + ": Grrr!"
+			print(mesaj)
+			# Gelecekte: UI'de göster
+	
+	await get_tree().create_timer(1.0).timeout
+
+func dusman_pattern_calistir():
+	# Her canlı düşman saldırır
+	for dusman_dict in dusmanlar:
+		if not dusman_dict["data"].oldu_mu():
+			var pattern_type = pattern_turunu_belirle(dusman_dict["data"].pattern_turu)
+			var pattern = AttackPattern.new(pattern_type, get_parent(), grid_node)
+			await pattern.calistir()
+
+func pattern_turunu_belirle(pattern_str: String) -> AttackPattern.PatternType:
+	match pattern_str:
+		"basit":
+			return AttackPattern.PatternType.BASIT_DALGALI
+		"orta":
+			return AttackPattern.PatternType.IZGARA
+		"zor":
+			return AttackPattern.PatternType.SPIRAL
+		"boss":
+			return AttackPattern.PatternType.BOSS_LAZER
+		_:
+			return AttackPattern.PatternType.RANDOM_SPAM
 
 func dusman_turn_bitir():
 	# Yeni round başlat

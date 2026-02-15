@@ -2,12 +2,14 @@ extends Node2D
 
 @onready var battle_manager = $BattleManager
 @onready var battle_ui = $BattleUI
+@onready var timing_bar = $TimingBar
 @onready var grid_node = $GridKonumlari
 @onready var player_node = $SavasOyuncusu
 
 func _ready():
 	# Referansları bağla
 	battle_manager.battle_ui = battle_ui
+	battle_manager.timing_bar = timing_bar
 	battle_manager.grid_node = grid_node
 	battle_manager.player_node = player_node
 	
@@ -17,8 +19,8 @@ func _ready():
 	test_savas_basla()
 
 func test_savas_basla():
-	var slime = load("res://Enemies/enemy_slime.tres")
-	var goblin = load("res://Enemies/enemy_goblin.tres")
+	var slime = load("res://enemy_slime.tres")
+	var goblin = load("res://enemy_goblin.tres")
 	
 	if slime and goblin:
 		battle_manager.savas_baslat([slime, goblin])

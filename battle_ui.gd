@@ -213,13 +213,20 @@ func hedef_secim_goster(dusmanlar: Array):
 	menu_tipi = "HEDEF"
 	secili_index = 0
 	
-	# Hedef listesi oluştur
+	# Hedef listesi ve index map oluştur
 	hedef_listesi.clear()
-	for dusman_dict in dusmanlar:
+	var hedef_index_map = []  # Gerçek index'leri sakla
+	
+	for i in range(dusmanlar.size()):
+		var dusman_dict = dusmanlar[i]
 		if not dusman_dict["data"].oldu_mu():
 			var isim = dusman_dict["data"].isim
 			var hp = dusman_dict["data"].current_hp
 			hedef_listesi.append(isim + " (HP: " + str(hp) + ")")
+			hedef_index_map.append(i)  # Gerçek index'i kaydet
+	
+	# Index map'i sakla (hedef seçimi için)
+	set_meta("hedef_index_map", hedef_index_map)
 	
 	hedef_menu_guncelle()
 
@@ -228,7 +235,13 @@ func _on_hedef_secildi(index: int):
 	menu_tipi = "ANA"
 	
 	if battle_manager:
-		battle_manager.hedef_secildi(index)
+		# Gerçek index'i bul
+		var index_map = get_meta("hedef_index_map", [])
+		if index < index_map.size():
+			var gercek_index = index_map[index]
+			battle_manager.hedef_secildi(gercek_index)
+		else:
+			print("HATA: Hedef index bulunamadı!")
 
 # --- ACT MENÜ ---
 func act_secenekleri_goster(acts: Array):
