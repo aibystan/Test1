@@ -22,7 +22,8 @@ var party_data = [
 		"atk": 15,
 		"def": 10,
 		"silah": null,
-		"zirh": null
+		"zirh": null,
+		"baygin": false
 	},
 	{
 		"isim": "Nina",
@@ -31,9 +32,33 @@ var party_data = [
 		"atk": 25,
 		"def": 5,
 		"silah": null,
-		"zirh": null
+		"zirh": null,
+		"baygin": false
 	}
 ]
+
+# Deltarune tarzı hasar dağıtıcı
+# Hasar önce aktif karakterden alınır, taşarsa diğerine geçer
+func parti_hasar_al(miktar: int, baslangic_index: int = 0) -> Array:
+	var etkilenenler = []
+	var kalan = miktar
+	var i = baslangic_index
+	var deneme = 0
+	
+	while kalan > 0 and deneme < party_data.size():
+		var k = party_data[i % party_data.size()]
+		if not k["baygin"]:
+			var alinacak = min(kalan, k["hp"])
+			k["hp"] -= alinacak
+			kalan -= alinacak
+			etkilenenler.append({"isim": k["isim"], "hasar": alinacak})
+			if k["hp"] <= 0:
+				k["hp"] = 0
+				k["baygin"] = true
+		i = (i + 1) % party_data.size()
+		deneme += 1
+	
+	return etkilenenler
 
 var secili_karakter_index = 0 
 var gidilecek_kapi_ismi = "" 

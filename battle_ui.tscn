@@ -7,6 +7,7 @@
 script = ExtResource("1")
 
 [node name="MessageBox" parent="." unique_id=1928426508 instance=ExtResource("2")]
+visible = false
 anchors_preset = -1
 anchor_left = 0.016
 anchor_top = 0.028
@@ -18,9 +19,7 @@ offset_right = 0.3199463
 offset_bottom = 0.0
 
 [node name="StatsPanel" type="Panel" parent="." unique_id=895395506]
-offset_top = 220.0
-offset_right = 640.0
-offset_bottom = 360.0
+layout_mode = 0
 
 [node name="MarginContainer" type="MarginContainer" parent="StatsPanel" unique_id=1425259440]
 layout_mode = 1
@@ -29,14 +28,14 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 3
+theme_override_constants/margin_bottom = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="StatsPanel/MarginContainer" unique_id=1862768513]
 layout_mode = 2
-theme_override_constants/separation = 40
+theme_override_constants/separation = 2
 
 [node name="Karakter1" type="VBoxContainer" parent="StatsPanel/MarginContainer/HBoxContainer" unique_id=1439373648]
 layout_mode = 2
@@ -44,19 +43,23 @@ size_flags_horizontal = 3
 
 [node name="IsimLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter1" unique_id=232383939]
 layout_mode = 2
+theme_override_font_sizes/font_size = 7
 text = "Ryu"
 horizontal_alignment = 1
 
 [node name="HPLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter1" unique_id=1170298429]
 layout_mode = 2
+theme_override_font_sizes/font_size = 7
 text = "HP: 100/100"
 
 [node name="QutLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter1" unique_id=331043800]
 layout_mode = 2
+theme_override_font_sizes/font_size = 7
 text = "Qut: 200/200"
 
 [node name="GPLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter1" unique_id=534251106]
 layout_mode = 2
+theme_override_font_sizes/font_size = 7
 text = "GP: %0"
 
 [node name="Karakter2" type="VBoxContainer" parent="StatsPanel/MarginContainer/HBoxContainer" unique_id=1825090912]
@@ -65,25 +68,27 @@ size_flags_horizontal = 3
 
 [node name="IsimLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter2" unique_id=362664286]
 layout_mode = 2
+theme_override_font_sizes/font_size = 7
 text = "Nina"
 horizontal_alignment = 1
 
 [node name="HPLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter2" unique_id=323031097]
 layout_mode = 2
+theme_override_font_sizes/font_size = 7
 text = "HP: 70/70"
 
 [node name="QutLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter2" unique_id=1148845685]
 layout_mode = 2
+theme_override_font_sizes/font_size = 7
 text = "Qut: 150/150"
 
 [node name="GPLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter2" unique_id=945786632]
 layout_mode = 2
+theme_override_font_sizes/font_size = 7
 text = "GP: %0"
 
 [node name="AnaMenuPanel" type="Panel" parent="." unique_id=1001219172]
-offset_top = 220.0
-offset_right = 640.0
-offset_bottom = 360.0
+layout_mode = 0
 
 [node name="MarginContainer" type="MarginContainer" parent="AnaMenuPanel" unique_id=836648717]
 layout_mode = 1
@@ -92,10 +97,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="AnaMenuPanel/MarginContainer" unique_id=1412531967]
 layout_mode = 2
@@ -128,10 +133,7 @@ text = "İnsaf"
 
 [node name="HedefPanel" type="Panel" parent="." unique_id=196935677]
 visible = false
-offset_left = 440.0
-offset_top = 260.0
-offset_right = 840.0
-offset_bottom = 460.0
+layout_mode = 0
 
 [node name="MarginContainer" type="MarginContainer" parent="HedefPanel" unique_id=585320683]
 layout_mode = 1
@@ -151,10 +153,7 @@ text = "Hedef Seç:"
 
 [node name="ActPanel" type="Panel" parent="." unique_id=301048595]
 visible = false
-offset_left = 440.0
-offset_top = 210.0
-offset_right = 840.0
-offset_bottom = 510.0
+layout_mode = 0
 
 [node name="MarginContainer" type="MarginContainer" parent="ActPanel" unique_id=346636446]
 layout_mode = 1
