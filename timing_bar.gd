@@ -15,8 +15,8 @@ signal timing_tamamlandi(kalite: String, carpan: float)
 var aktif = false
 var cursor_pozisyon = 0.0
 var yon = 1  # 1 = sağa, -1 = sola
-var hiz = 100.0  # Başlangıç hızı
-var max_hiz = 400.0  # Maksimum hız (ortada)
+var hiz = 150.0  # Başlangıç hızı (100 → 150)
+var max_hiz = 500.0  # Maksimum hız (400 → 500)
 var hizlanma = 300.0  # Hızlanma oranı
 
 # Zone pozisyonları (0-1 arası)

@@ -8,10 +8,11 @@ signal dusman_turn_basladi
 signal savas_bitti(kazanildi: bool)
 
 # --- REFERANSLAR ---
-var battle_ui: Control
+var battle_ui  # Type hint kaldırıldı - CanvasLayer olabilir
 var grid_node: Node2D
 var player_node: Area2D
 var timing_bar: Control
+var message_box: Control  # Mesaj kutusu referansı
 
 # --- DÜŞMANLAR ---
 var dusmanlar: Array = []  # {data: EnemyData, node: Node2D}
@@ -60,24 +61,71 @@ func savas_baslat(dusman_listesi: Array):
 	ilk_player_turn_basla()
 
 func spawn_dusman(dusman: EnemyData, index: int):
-	# Düşman container oluştur
+	# Düşman sayısına göre pozisyon hesapla
+	var toplam_dusman = dusmanlar.size() + 1
+	var ekran_merkez_x = 640  # 1280 / 2
+	
+	# Düşmanları ortala
+	var toplam_genislik = toplam_dusman * 150
+	var baslangic_x = ekran_merkez_x - (toplam_genislik / 2)
+	
+	var dusman_x = baslangic_x + (index * 150) + 75  # +75 merkezlemek için
+	var dusman_y = 200  # Üstte
+	
+	# Düşman container
 	var dusman_container = Node2D.new()
-	dusman_container.position = Vector2(700 + (index * 120), 200)  # Daha sağda ve yukarıda
+	dusman_container.position = Vector2(dusman_x, dusman_y)
 	
-	# Düşman görsel (ColorRect) - DAHA KÜÇÜK
+	# Düşman görsel (ColorRect) - BÜYÜK
 	var dusman_node = ColorRect.new()
-	dusman_node.custom_minimum_size = Vector2(80, 80)  # Sabit boyut
-	dusman_node.size = Vector2(80, 80)
+	dusman_node.custom_minimum_size = Vector2(120, 120)
+	dusman_node.size = Vector2(120, 120)
 	dusman_node.color = dusman.renk
-	
-	# İsim label ekle
-	var label = Label.new()
-	label.text = dusman.isim + "\nHP: " + str(dusman.current_hp)
-	label.position = Vector2(0, 90)  # Altına yaz
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	dusman_container.add_child(label)
-	
 	dusman_container.add_child(dusman_node)
+	
+	# İsim label
+	var isim_label = Label.new()
+	isim_label.text = dusman.isim
+	isim_label.position = Vector2(0, -30)
+	isim_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	isim_label.custom_minimum_size = Vector2(120, 20)
+	dusman_container.add_child(isim_label)
+	
+	# HP Bar container
+	var hp_container = Control.new()
+	hp_container.position = Vector2(0, 130)
+	hp_container.custom_minimum_size = Vector2(120, 20)
+	dusman_container.add_child(hp_container)
+	
+	# HP Bar background
+	var hp_bg = ColorRect.new()
+	hp_bg.size = Vector2(120, 15)
+	hp_bg.color = Color(0.2, 0.2, 0.2)
+	hp_container.add_child(hp_bg)
+	
+	# HP Bar fill
+	var hp_bar = ColorRect.new()
+	hp_bar.size = Vector2(120, 15)
+	hp_bar.color = Color(0, 1, 0)
+	hp_bar.name = "HPBar"
+	hp_container.add_child(hp_bar)
+	
+	# HP text
+	var hp_label = Label.new()
+	hp_label.text = str(dusman.current_hp) + "/" + str(dusman.max_hp)
+	hp_label.position = Vector2(0, 15)
+	hp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hp_label.custom_minimum_size = Vector2(120, 20)
+	hp_label.name = "HPLabel"
+	hp_container.add_child(hp_label)
+	
+	# Konuşma balonu (gizli başlar)
+	if ResourceLoader.exists("res://speech_bubble.tscn"):
+		var balon = load("res://speech_bubble.tscn").instantiate()
+		balon.position = Vector2(0, -100)
+		balon.name = "SpeechBubble"
+		dusman_container.add_child(balon)
+	
 	get_parent().add_child(dusman_container)
 	
 	return dusman_container
@@ -147,10 +195,38 @@ func hasar_ver(hedef_index: int, carpan: float):
 		var dusman_dict = dusmanlar[hedef_index]
 		dusman_dict["data"].hasar_al(damage)
 		
-		# HP label güncelle - node hala var mı kontrol et
-		if is_instance_valid(dusman_dict["node"]) and dusman_dict["node"].has_node("Label"):
-			var label = dusman_dict["node"].get_node("Label")
-			label.text = dusman_dict["data"].isim + "\nHP: " + str(dusman_dict["data"].current_hp)
+		# HP bar ve label güncelle
+		if is_instance_valid(dusman_dict["node"]):
+			# HP Bar güncelle
+			if dusman_dict["node"].has_node("Control/HPBar"):
+				var hp_bar = dusman_dict["node"].get_node("Control/HPBar")
+				var hp_ratio = float(dusman_dict["data"].current_hp) / float(dusman_dict["data"].max_hp)
+				hp_bar.size.x = 120 * hp_ratio
+				
+				# Renk değiştir (yeşil → sarı → kırmızı)
+				if hp_ratio > 0.5:
+					hp_bar.color = Color(0, 1, 0)  # Yeşil
+				elif hp_ratio > 0.25:
+					hp_bar.color = Color(1, 1, 0)  # Sarı
+				else:
+					hp_bar.color = Color(1, 0, 0)  # Kırmızı
+			
+			# HP Label güncelle
+			if dusman_dict["node"].has_node("Control/HPLabel"):
+				var hp_label = dusman_dict["node"].get_node("Control/HPLabel")
+				hp_label.text = str(dusman_dict["data"].current_hp) + "/" + str(dusman_dict["data"].max_hp)
+		
+		# Mesaj göster
+		if message_box:
+			var kalite_text = ""
+			if carpan >= 2.0:
+				kalite_text = " PERFECT!"
+			elif carpan >= 1.0:
+				kalite_text = " GOOD!"
+			else:
+				kalite_text = " MISS..."
+			
+			message_box.mesaj_goster(dusman_dict["data"].isim + " " + str(damage) + " hasar aldı!" + kalite_text, 1.5)
 		
 		print(dusman_dict["data"].isim + " " + str(damage) + " hasar aldı! (x" + str(carpan) + ")")
 		
@@ -159,7 +235,7 @@ func hasar_ver(hedef_index: int, carpan: float):
 			dusman_oldu(hedef_index)
 	
 	# Turn bitir
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(1.5).timeout
 	player_turn_bitir()
 
 func dusman_oldu(index: int):
@@ -189,17 +265,19 @@ func dusman_turn_basla():
 	suanki_faz = TurnFazi.GRID  # Grid fazı
 	dusman_turn_basladi.emit()
 	
-	print("Düşman saldırıyor!")
+	# Mesaj göster
+	if message_box:
+		message_box.mesaj_goster("Düşmanlar saldırıyor!", 1.5)
 	
-	# Menüyü kapat, grid'i aç
+	# Menüyü kapat, grid'i aç (animasyonlu)
 	if battle_ui:
-		battle_ui.visible = false
+		await battle_ui.panelleri_gizle()
 	
 	if player_node:
 		player_node.process_mode = Node.PROCESS_MODE_ALWAYS
 		player_node.visible = true
 	
-	# Düşman konuşması (basit)
+	# Düşman konuşması (balon ile)
 	await dusman_konusma_goster()
 	
 	# Pattern başlat
@@ -208,14 +286,15 @@ func dusman_turn_basla():
 	dusman_turn_bitir()
 
 func dusman_konusma_goster():
-	# Her düşman kısa bir mesaj söyler
+	# Her canlı düşman konuşur
 	for dusman_dict in dusmanlar:
 		if not dusman_dict["data"].oldu_mu():
-			var mesaj = dusman_dict["data"].isim + ": Grrr!"
-			print(mesaj)
-			# Gelecekte: UI'de göster
+			# Konuşma balonu göster
+			if is_instance_valid(dusman_dict["node"]) and dusman_dict["node"].has_node("SpeechBubble"):
+				var balon = dusman_dict["node"].get_node("SpeechBubble")
+				balon.goster("Grrr!", 1.0)
 	
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(1.2).timeout
 
 func dusman_pattern_calistir():
 	# Her canlı düşman saldırır

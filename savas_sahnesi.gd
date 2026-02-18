@@ -13,14 +13,18 @@ func _ready():
 	battle_manager.grid_node = grid_node
 	battle_manager.player_node = player_node
 	
+	# MessageBox'ı battle_ui içinden al
+	if battle_ui.has_node("MessageBox"):
+		battle_manager.message_box = battle_ui.get_node("MessageBox")
+	
 	battle_ui.battle_manager = battle_manager
 	
 	# Test: 2 düşmanla savaş başlat
 	test_savas_basla()
 
 func test_savas_basla():
-	var slime = load("res://enemy_slime.tres")
-	var goblin = load("res://enemy_goblin.tres")
+	var slime = load("res://Enemies/enemy_slime.tres")
+	var goblin = load("res://Enemies/enemy_goblin.tres")
 	
 	if slime and goblin:
 		battle_manager.savas_baslat([slime, goblin])
