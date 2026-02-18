@@ -8,7 +8,7 @@
 [ext_resource type="Script" uid="uid://dh018w1upylsi" path="res://sign.gd" id="4_omswd"]
 [ext_resource type="PackedScene" uid="uid://b540j4t1qo7b8" path="res://kayit_tasi.tscn" id="6_87uyu"]
 [ext_resource type="PackedScene" uid="uid://31fxfnws65eq" path="res://kapi.tscn" id="6_m4qw5"]
-[ext_resource type="PackedScene" uid="uid://bjaejx36h8ydj" path="res://kayit_menusu.tscn" id="7_7sv5v"]
+[ext_resource type="PackedScene" uid="uid://c4yb5qw8r7xfj" path="res://kayit_menusu.tscn" id="7_7sv5v"]
 [ext_resource type="PackedScene" uid="uid://ctxj5em6pfdal" path="res://envanter_menusu.tscn" id="7_87uyu"]
 [ext_resource type="PackedScene" uid="uid://brg2hgg6js3jp" path="res://sandik.tscn" id="8_5xcxp"]
 [ext_resource type="Resource" uid="uid://cn0l01683jfc1" path="res://Items/pasli_kilic.tres" id="9_lgqhf"]

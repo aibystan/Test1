@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://7y663nu5uicq" path="res://savas_oyuncusu.tscn" id="2_urhhq"]
 [ext_resource type="PackedScene" uid="uid://bg0o4u0nfu6i0" path="res://battle_ui.tscn" id="3_vlb07"]
 [ext_resource type="PackedScene" uid="uid://43u4u2g8uk4i" path="res://timing_bar.tscn" id="4_ow8yj"]
+[ext_resource type="PackedScene" uid="uid://dv21t0v6edgd7" path="res://speech_bubble.tscn" id="6_vlb07"]
 
 [node name="Savas Sahnesi" type="Node2D" unique_id=21708731]
 script = ExtResource("1_mldtv")
@@ -80,3 +81,9 @@ position = Vector2(527, 195)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1535612433]
 anchor_mode = 0
+
+[node name="SpeechBubble" parent="." unique_id=496223940 instance=ExtResource("6_vlb07")]
+offset_left = 1.0
+offset_top = -62.0
+offset_right = 151.0
+offset_bottom = -2.0

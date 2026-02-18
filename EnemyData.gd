@@ -22,6 +22,23 @@ class_name EnemyData
 # Check mesajı
 @export var check_mesaji: String = "Sıradan bir düşman."
 
+# Savaş esnasında metin kutusunda gösterilecek flavor text'ler
+# Her turn başında birinden rastgele seçilir
+@export var flavor_texts: Array[String] = ["..."]
+
+# Düşman turu başında konuşma baloncuğunda gösterilecek diyaloglar
+# Sırayla gösterilir (boss savaşlarında her tur farklı şey söyler)
+# Liste bitince tekrar başa döner
+@export var diyaloglar: Array[String] = ["Grrr..."]
+var diyalog_index: int = 0
+
+func sonraki_diyalog() -> String:
+	if diyaloglar.is_empty():
+		return ""
+	var metin = diyaloglar[diyalog_index]
+	diyalog_index = (diyalog_index + 1) % diyaloglar.size()
+	return metin
+
 # --- SAVAŞ MEKANİĞİ ---
 @export var pattern_turu: String = "basit"  # basit, orta, zor, boss
 @export var saldiri_gecikmesi: float = 2.0  # Saldırılar arası süre

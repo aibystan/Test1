@@ -81,9 +81,8 @@ layout_mode = 2
 text = "GP: %0"
 
 [node name="AnaMenuPanel" type="Panel" parent="." unique_id=1001219172]
-offset_left = 640.0
 offset_top = 220.0
-offset_right = 1280.0
+offset_right = 640.0
 offset_bottom = 360.0
 
 [node name="MarginContainer" type="MarginContainer" parent="AnaMenuPanel" unique_id=836648717]

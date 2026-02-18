@@ -62,15 +62,18 @@ func savas_baslat(dusman_listesi: Array):
 
 func spawn_dusman(dusman: EnemyData, index: int):
 	# Düşman sayısına göre pozisyon hesapla
+	# Ekran: 640x360, metin kutusu üstte ~90px, alt panel ~90px
+	# Düşmanlar: metin kutusunun hemen altında, ortalanmış
 	var toplam_dusman = dusmanlar.size() + 1
-	var ekran_merkez_x = 640  # 1280 / 2
+	var ekran_merkez_x = 320  # 640 / 2
 	
-	# Düşmanları ortala
-	var toplam_genislik = toplam_dusman * 150
+	var dusman_genislik = 80
+	var bosluk = 20
+	var toplam_genislik = toplam_dusman * (dusman_genislik + bosluk) - bosluk
 	var baslangic_x = ekran_merkez_x - (toplam_genislik / 2)
 	
-	var dusman_x = baslangic_x + (index * 150) + 75  # +75 merkezlemek için
-	var dusman_y = 200  # Üstte
+	var dusman_x = baslangic_x + index * (dusman_genislik + bosluk)
+	var dusman_y = 130  # Metin kutusunun altında
 	
 	# Düşman container
 	var dusman_container = Node2D.new()
@@ -88,7 +91,7 @@ func spawn_dusman(dusman: EnemyData, index: int):
 	isim_label.text = dusman.isim
 	isim_label.position = Vector2(0, -30)
 	isim_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	isim_label.custom_minimum_size = Vector2(120, 20)
+	isim_label.custom_minimum_size = Vector2(80, 20)
 	dusman_container.add_child(isim_label)
 	
 	# HP Bar container
@@ -115,14 +118,16 @@ func spawn_dusman(dusman: EnemyData, index: int):
 	hp_label.text = str(dusman.current_hp) + "/" + str(dusman.max_hp)
 	hp_label.position = Vector2(0, 15)
 	hp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	hp_label.custom_minimum_size = Vector2(120, 20)
+	hp_label.custom_minimum_size = Vector2(80, 20)
 	hp_label.name = "HPLabel"
 	hp_container.add_child(hp_label)
 	
-	# Konuşma balonu (gizli başlar)
+	# Konuşma balonu - düşmanın sağ üstünde
 	if ResourceLoader.exists("res://speech_bubble.tscn"):
 		var balon = load("res://speech_bubble.tscn").instantiate()
-		balon.position = Vector2(0, -100)
+		# Düşmanın sağ üst köşesine yerleştir
+		balon.position = Vector2(dusman_genislik, -70)
+		balon.set_size(Vector2(180, 65))
 		balon.name = "SpeechBubble"
 		dusman_container.add_child(balon)
 	
@@ -137,18 +142,34 @@ func ilk_player_turn_basla():
 
 func player_turn_basla():
 	suanki_durum = TurnDurumu.PLAYER_1 if aktif_karakter_index == 0 else TurnDurumu.PLAYER_2
-	suanki_faz = TurnFazi.MENU  # Menü fazı
+	suanki_faz = TurnFazi.MENU
 	turn_basladi.emit(aktif_karakter_index)
 	
-	# Grid'i kapat, menüyü aç
 	if player_node:
 		player_node.process_mode = Node.PROCESS_MODE_DISABLED
 		player_node.visible = false
 	
-	# UI'ye turn başladığını bildir
+	# Flavor text sadece round basinda (ilk karakter)
+	if aktif_karakter_index == 0 and message_box:
+		var flavor = flavor_text_sec()
+		if flavor != "":
+			message_box.flavor_goster(flavor)
+	
 	if battle_ui:
 		battle_ui.visible = true
 		battle_ui.turn_menusu_goster(player_characters[aktif_karakter_index])
+
+func flavor_text_sec() -> String:
+	var canli = []
+	for d in dusmanlar:
+		if not d["data"].oldu_mu():
+			canli.append(d["data"])
+	if canli.is_empty():
+		return ""
+	var dusman = canli[randi() % canli.size()]
+	if dusman.flavor_texts.size() > 0:
+		return dusman.flavor_texts[randi() % dusman.flavor_texts.size()]
+	return ""
 
 # PLAYER EYLEM SEÇTİ
 func player_eylem_sec(eylem_tipi: String):
@@ -201,7 +222,7 @@ func hasar_ver(hedef_index: int, carpan: float):
 			if dusman_dict["node"].has_node("Control/HPBar"):
 				var hp_bar = dusman_dict["node"].get_node("Control/HPBar")
 				var hp_ratio = float(dusman_dict["data"].current_hp) / float(dusman_dict["data"].max_hp)
-				hp_bar.size.x = 120 * hp_ratio
+				hp_bar.size.x = 80 * hp_ratio
 				
 				# Renk değiştir (yeşil → sarı → kırmızı)
 				if hp_ratio > 0.5:
@@ -216,26 +237,30 @@ func hasar_ver(hedef_index: int, carpan: float):
 				var hp_label = dusman_dict["node"].get_node("Control/HPLabel")
 				hp_label.text = str(dusman_dict["data"].current_hp) + "/" + str(dusman_dict["data"].max_hp)
 		
-		# Mesaj göster
+		# Sadece timing sonucunu kısa göster (flavor text kaybolmaz)
 		if message_box:
 			var kalite_text = ""
 			if carpan >= 2.0:
-				kalite_text = " PERFECT!"
+				kalite_text = "PERFECT!"
 			elif carpan >= 1.0:
-				kalite_text = " GOOD!"
+				kalite_text = "GOOD!"
 			else:
-				kalite_text = " MISS..."
-			
-			message_box.mesaj_goster(dusman_dict["data"].isim + " " + str(damage) + " hasar aldı!" + kalite_text, 1.5)
+				kalite_text = "MISS..."
+			message_box.sonuc_goster(kalite_text)
 		
-		print(dusman_dict["data"].isim + " " + str(damage) + " hasar aldı! (x" + str(carpan) + ")")
+		print(dusman_dict["data"].isim + " " + str(damage) + " hasar aldi! (x" + str(carpan) + ")")
 		
 		# Öldü mü?
-		if dusman_dict["data"].oldu_mu():
+		var oldu = dusman_dict["data"].oldu_mu()
+		if oldu:
 			dusman_oldu(hedef_index)
 	
+	# Savaş kazanıldıysa turn bitirme
+	if aktif_dusman_sayisi <= 0:
+		return
+	
 	# Turn bitir
-	await get_tree().create_timer(1.5).timeout
+	await get_tree().create_timer(1.0).timeout
 	player_turn_bitir()
 
 func dusman_oldu(index: int):
@@ -265,13 +290,15 @@ func dusman_turn_basla():
 	suanki_faz = TurnFazi.GRID  # Grid fazı
 	dusman_turn_basladi.emit()
 	
-	# Mesaj göster
-	if message_box:
-		message_box.mesaj_goster("Düşmanlar saldırıyor!", 1.5)
-	
 	# Menüyü kapat, grid'i aç (animasyonlu)
 	if battle_ui:
 		await battle_ui.panelleri_gizle()
+	
+	# Flavor text düşman turunda da devam eder (paneller kapandıktan sonra göster)
+	if message_box:
+		var flavor = flavor_text_sec()
+		if flavor != "":
+			message_box.flavor_goster(flavor)
 	
 	if player_node:
 		player_node.process_mode = Node.PROCESS_MODE_ALWAYS
@@ -286,15 +313,25 @@ func dusman_turn_basla():
 	dusman_turn_bitir()
 
 func dusman_konusma_goster():
-	# Her canlı düşman konuşur
+	# İlk canlı düşman konuşur, bitmesini bekle
+	var konusan_balon = null
 	for dusman_dict in dusmanlar:
-		if not dusman_dict["data"].oldu_mu():
-			# Konuşma balonu göster
+		var data = dusman_dict["data"]
+		if not data.oldu_mu():
 			if is_instance_valid(dusman_dict["node"]) and dusman_dict["node"].has_node("SpeechBubble"):
 				var balon = dusman_dict["node"].get_node("SpeechBubble")
-				balon.goster("Grrr!", 1.0)
+				var diyalog = data.sonraki_diyalog()
+				if diyalog != "":
+					var satirlar: Array = Array(diyalog.split("|"))
+					balon.goster_liste(satirlar)
+					konusan_balon = balon
+				break  # Sadece ilk canlı düşman konuşur
 	
-	await get_tree().create_timer(1.2).timeout
+	if konusan_balon != null:
+		await konusan_balon.konusma_bitti
+	else:
+		# Konuşacak düşman yok, kısa bekle
+		await get_tree().create_timer(0.3).timeout
 
 func dusman_pattern_calistir():
 	# Her canlı düşman saldırır
