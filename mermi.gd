@@ -41,7 +41,11 @@ func _on_area_entered(area):
 			
 			if hasar_var_mi:
 				print("VURULDUK! Katman: " + str(katman))
-				area.hasar_al(10) # 10 can düş
+				# Battle manager üzerinden parti hasarı uygula
+				var sahne = get_tree().current_scene
+				if sahne.has_node("BattleManager"):
+					var bm = sahne.get_node("BattleManager")
+					bm._parti_hasar_uygula(10)
 				queue_free() # Mermi yok olsun
 			else:
 				print("ISKA! Başarılı manevra.")

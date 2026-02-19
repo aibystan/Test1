@@ -37,10 +37,10 @@ var hasar_dagilim_index: int = 0
 
 # 1-4 düşman için sabit grid pozisyonları (ekran 640x360, düşman alanı y=100-240)
 const POZISYON_GRIDI = {
-	1: [Vector2(320, 170)],
-	2: [Vector2(210, 170), Vector2(430, 170)],
-	3: [Vector2(130, 170), Vector2(320, 170), Vector2(510, 170)],
-	4: [Vector2(110, 155), Vector2(270, 155), Vector2(390, 155), Vector2(540, 155)]
+	1: [Vector2(320, 100)],
+	2: [Vector2(210, 100), Vector2(430, 100)],
+	3: [Vector2(130, 100), Vector2(320, 100), Vector2(510, 100)],
+	4: [Vector2(110, 90), Vector2(270, 90), Vector2(390, 90), Vector2(540, 90)]
 }
 
 func _ready():
@@ -131,6 +131,15 @@ func player_turn_basla():
 		battle_ui.visible = true
 		battle_ui.turn_menusu_goster(karakter)
 
+	# Oyuncu turu: flavor text göster
+	if aktif_karakter_index == 0 and message_box:
+		var flavor = flavor_text_sec()
+		if flavor != "":
+			message_box.visible = true
+			message_box.flavor_goster(flavor)
+		else:
+			message_box.visible = false
+
 func player_turn_bitir():
 	aktif_karakter_index += 1
 	_sonraki_aktif_karaktere_gec()
@@ -202,6 +211,7 @@ func hasar_ver(hedef_index: int, carpan: float):
 	# Timing sonucu göster
 	if message_box:
 		var kalite = "MISS..." if carpan < 1.0 else ("PERFECT!" if carpan >= 2.0 else "GOOD!")
+		message_box.visible = true
 		message_box.sonuc_goster(kalite)
 
 	print(dusman_dict["data"].isim + " " + str(damage) + " hasar aldı!")
@@ -235,6 +245,9 @@ func dusman_turn_basla():
 	suanki_durum = TurnDurumu.DUSMAN
 	suanki_faz = TurnFazi.GRID
 	dusman_turn_basladi.emit()
+	# Düşman turu boyunca metin kutusu KAPALI
+	if message_box:
+		message_box.visible = false
 
 	if battle_ui:
 		await battle_ui.panelleri_gizle()
@@ -243,13 +256,7 @@ func dusman_turn_basla():
 
 	await dusman_konusma_goster()
 
-	# Konuşma bitti - metin kutusunu aç, flavor text göster
-	if battle_ui:
-		battle_ui.metin_kutusunu_ac()
-	if message_box:
-		var flavor = flavor_text_sec()
-		if flavor != "":
-			message_box.flavor_goster(flavor)
+	# Konuşma bitti - metin kutusu KAPALI kalır, sadece grid/pattern
 
 	if player_node:
 		player_node.process_mode = Node.PROCESS_MODE_ALWAYS
@@ -293,11 +300,20 @@ func _parti_hasar_uygula(miktar: int):
 			if Global.party_data[i]["isim"] == son_isim:
 				hasar_dagilim_index = (i + 1) % Global.party_data.size()
 				break
+		# Baygin kontrolü
+		for k in Global.party_data:
+			if k["hp"] <= 0 and not k.get("baygin", false):
+				k["hp"] = 0
+				k["baygin"] = true
+				print(k["isim"] + " bayıldı!")
 	# UI'yi güncelle
 	if battle_ui and battle_ui.visible:
 		battle_ui.stat_guncelle()
 
 func dusman_turn_bitir():
+	# Düşman turu bitti - metin kutusunu kapat
+	if message_box:
+		message_box.visible = false
 	# Tüm karakterler baygın mı kontrol et
 	var hepsi_baygin = true
 	for k in Global.party_data:

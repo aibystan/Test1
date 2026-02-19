@@ -6,20 +6,12 @@
 [node name="BattleUI" type="CanvasLayer" unique_id=864144045]
 script = ExtResource("1")
 
-[node name="MessageBox" parent="." unique_id=1928426508 instance=ExtResource("2")]
-visible = false
-anchors_preset = -1
-anchor_left = 0.016
-anchor_top = 0.028
-anchor_right = 0.98700005
-anchor_bottom = 0.25
-offset_left = -0.24000072
-offset_top = -0.07999992
-offset_right = 0.3199463
-offset_bottom = 0.0
+[node name="MessageBox" parent="." unique_id=832718018 instance=ExtResource("2")]
 
 [node name="StatsPanel" type="Panel" parent="." unique_id=895395506]
-layout_mode = 0
+offset_top = 415.0
+offset_right = 200.0
+offset_bottom = 470.0
 
 [node name="MarginContainer" type="MarginContainer" parent="StatsPanel" unique_id=1425259440]
 layout_mode = 1
@@ -50,17 +42,17 @@ horizontal_alignment = 1
 [node name="HPLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter1" unique_id=1170298429]
 layout_mode = 2
 theme_override_font_sizes/font_size = 7
-text = "HP: 100/100"
+text = "HP 100/100"
 
 [node name="QutLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter1" unique_id=331043800]
 layout_mode = 2
 theme_override_font_sizes/font_size = 7
-text = "Qut: 200/200"
+text = "QUT 200"
 
 [node name="GPLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter1" unique_id=534251106]
 layout_mode = 2
 theme_override_font_sizes/font_size = 7
-text = "GP: %0"
+text = "GP 0%"
 
 [node name="Karakter2" type="VBoxContainer" parent="StatsPanel/MarginContainer/HBoxContainer" unique_id=1825090912]
 layout_mode = 2
@@ -75,20 +67,24 @@ horizontal_alignment = 1
 [node name="HPLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter2" unique_id=323031097]
 layout_mode = 2
 theme_override_font_sizes/font_size = 7
-text = "HP: 70/70"
+text = "HP 70/70"
 
 [node name="QutLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter2" unique_id=1148845685]
 layout_mode = 2
 theme_override_font_sizes/font_size = 7
-text = "Qut: 150/150"
+text = "QUT 0"
 
 [node name="GPLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter2" unique_id=945786632]
 layout_mode = 2
 theme_override_font_sizes/font_size = 7
-text = "GP: %0"
+text = "GP 0%"
 
 [node name="AnaMenuPanel" type="Panel" parent="." unique_id=1001219172]
-layout_mode = 0
+visible = false
+offset_left = 200.0
+offset_top = 415.0
+offset_right = 640.0
+offset_bottom = 470.0
 
 [node name="MarginContainer" type="MarginContainer" parent="AnaMenuPanel" unique_id=836648717]
 layout_mode = 1
@@ -104,36 +100,44 @@ theme_override_constants/margin_bottom = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="AnaMenuPanel/MarginContainer" unique_id=1412531967]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 5
 
 [node name="SaldirBtn" type="Button" parent="AnaMenuPanel/MarginContainer/HBoxContainer" unique_id=36114406]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 10
 text = "Saldır"
 
 [node name="SihirBtn" type="Button" parent="AnaMenuPanel/MarginContainer/HBoxContainer" unique_id=1263174437]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 10
 text = "Sihir"
 
 [node name="EylemBtn" type="Button" parent="AnaMenuPanel/MarginContainer/HBoxContainer" unique_id=219072796]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 10
 text = "Eylem"
 
 [node name="ItemBtn" type="Button" parent="AnaMenuPanel/MarginContainer/HBoxContainer" unique_id=282413704]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 10
 text = "İtem"
 
 [node name="InsafBtn" type="Button" parent="AnaMenuPanel/MarginContainer/HBoxContainer" unique_id=1343622410]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 10
 text = "İnsaf"
 
 [node name="HedefPanel" type="Panel" parent="." unique_id=196935677]
 visible = false
-layout_mode = 0
+offset_left = 235.0
+offset_top = 135.0
+offset_right = 405.0
+offset_bottom = 225.0
 
 [node name="MarginContainer" type="MarginContainer" parent="HedefPanel" unique_id=585320683]
 layout_mode = 1
@@ -142,18 +146,22 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
 
 [node name="Label" type="Label" parent="HedefPanel/MarginContainer" unique_id=1763771739]
 layout_mode = 2
-text = "Hedef Seç:"
+theme_override_font_sizes/font_size = 10
+text = "Hedef:"
 
 [node name="ActPanel" type="Panel" parent="." unique_id=301048595]
 visible = false
-layout_mode = 0
+offset_left = 235.0
+offset_top = 125.0
+offset_right = 405.0
+offset_bottom = 235.0
 
 [node name="MarginContainer" type="MarginContainer" parent="ActPanel" unique_id=346636446]
 layout_mode = 1
@@ -162,11 +170,12 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
 
 [node name="Label" type="Label" parent="ActPanel/MarginContainer" unique_id=1894403749]
 layout_mode = 2
-text = "Act Seç:"
+theme_override_font_sizes/font_size = 10
+text = "Act:"

@@ -13,78 +13,86 @@ var secenekler: Array = []
 var hedef_listesi: Array = []
 var _hedef_dusmanlar: Array = []
 
-# Ekran 640x360
-# Alt panel: StatsPanel sol 200px, AnaMenuPanel sağ 440px, yükseklik 55px
-const SW = 640
 const SH = 360
-const PH = 55      # panel yüksekliği
+const PH = 55
 const STATS_W = 200
 const MENU_W = 440
 
+# Manuel animasyon state - başlangıç değerleri _ready'de set edilir
+var _stat_hedef_y: float = 415.0
+var _menu_hedef_y: float = 415.0
+var _animasyon_hizi: float = 600.0  # piksel/saniye
+var _animasyon_aktif: bool = false   # _ready bitmeden hareket etme
+
+var _panelleri_gizle_bekleniyor: bool = false
+var _gizle_signal_verildi: bool = false
+
+signal _gizleme_bitti
+
 func _ready():
-	visible = true
-	_panelleri_ayarla()
-	ana_menu_panel.visible = false
-	hedef_panel.visible = false
-	act_panel.visible = false
 	if message_box:
 		message_box.visible = false
+	ana_menu_panel.visible = false
+	# 1 frame bekle ki node'lar yerleşsin
+	await get_tree().process_frame
+	# Gerçek başlangıç konumunu oku, hedefi buna eşitle
+	var baslangic_y = stats_panel.global_position.y
+	_stat_hedef_y = baslangic_y
+	_menu_hedef_y = baslangic_y
+	_animasyon_aktif = true
 
-func _panelleri_ayarla():
-	stats_panel.set_position(Vector2(0, SH))
-	stats_panel.set_size(Vector2(STATS_W, PH))
+func _process(delta):
+	if not _animasyon_aktif:
+		return
 
-	ana_menu_panel.set_position(Vector2(STATS_W, SH))
-	ana_menu_panel.set_size(Vector2(MENU_W, PH))
+	var adim = _animasyon_hizi * delta
+	var sp_y = stats_panel.global_position.y
+	var mp_y = ana_menu_panel.global_position.y
 
-	hedef_panel.set_position(Vector2(SW / 2 - 85, SH / 2 - 45))
-	hedef_panel.set_size(Vector2(170, 90))
+	if abs(sp_y - _stat_hedef_y) > 0.5:
+		stats_panel.global_position.y = move_toward(sp_y, _stat_hedef_y, adim)
+	else:
+		stats_panel.global_position.y = _stat_hedef_y
 
-	act_panel.set_position(Vector2(SW / 2 - 85, SH / 2 - 55))
-	act_panel.set_size(Vector2(170, 110))
+	if abs(mp_y - _menu_hedef_y) > 0.5:
+		ana_menu_panel.global_position.y = move_toward(mp_y, _menu_hedef_y, adim)
+	else:
+		ana_menu_panel.global_position.y = _menu_hedef_y
+		if _panelleri_gizle_bekleniyor:
+			_panelleri_gizle_bekleniyor = false
+			ana_menu_panel.visible = false
+			_gizleme_bitti.emit()
 
-func _process(_delta):
 	if not visible: return
 	klavye_kontrol()
 
+# --- ANİMASYONLAR ---
+func panelleri_goster():
+	ana_menu_panel.visible = true
+	_stat_hedef_y = float(SH - PH)
+	_menu_hedef_y = float(SH - PH)
+
+func panelleri_gizle():
+	if message_box:
+		message_box.visible = false
+	_panelleri_gizle_bekleniyor = true
+	_stat_hedef_y = float(SH + PH)
+	_menu_hedef_y = float(SH + PH)
+	await _gizleme_bitti
+
+func sadece_stat_goster():
+	ana_menu_panel.visible = false
+	if message_box:
+		message_box.visible = false
+	_stat_hedef_y = float(SH - PH)
+	_menu_hedef_y = float(SH + PH)
+
+# --- KLAVYE ---
 func klavye_kontrol():
 	match menu_tipi:
 		"ANA":   ana_menu_kontrol()
 		"HEDEF": hedef_menu_kontrol()
 		"ACT":   act_menu_kontrol()
-
-# --- ANİMASYONLAR ---
-func panelleri_goster():
-	ana_menu_panel.visible = true
-	if message_box:
-		message_box.visible = false
-	var hy = float(SH - PH)
-	var tw = create_tween().set_parallel(true)
-	tw.tween_property(stats_panel,    "position:y", hy, 0.2).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tw.tween_property(ana_menu_panel, "position:y", hy, 0.2).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-
-func panelleri_gizle():
-	if message_box:
-		message_box.visible = false
-	var tw = create_tween().set_parallel(true)
-	tw.tween_property(stats_panel,    "position:y", float(SH), 0.2).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-	tw.tween_property(ana_menu_panel, "position:y", float(SH), 0.2).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-	await tw.finished
-	ana_menu_panel.visible = false
-
-# Düşman konuşma fazı: sadece stat paneli, metin kutusu KAPALI
-func sadece_stat_goster():
-	ana_menu_panel.visible = false
-	if message_box:
-		message_box.visible = false
-	var hy = float(SH - PH)
-	var tw = create_tween()
-	tw.tween_property(stats_panel, "position:y", hy, 0.2).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-
-# Konuşma bitti, pattern başlıyor
-func metin_kutusunu_ac():
-	if message_box:
-		message_box.visible = true
 
 # --- ANA MENÜ ---
 func ana_menu_kontrol():
@@ -156,7 +164,7 @@ func act_menu_guncelle():
 		text += ("> " if i == secili_index else "  ") + secenekler[i] + "\n"
 	act_panel.get_node("MarginContainer/Label").text = text
 
-# --- TURN SİSTEMİ ---
+# --- TURN ---
 func turn_menusu_goster(_k: Dictionary):
 	menu_tipi = "ANA"
 	secili_index = 0
@@ -189,10 +197,9 @@ func hedef_secim_goster(dusmanlar: Array):
 	_hedef_dusmanlar.clear()
 	var idx_map = []
 	for i in range(dusmanlar.size()):
-		var d = dusmanlar[i]
-		if not d["data"].oldu_mu():
-			hedef_listesi.append(d["data"].isim)
-			_hedef_dusmanlar.append(d["data"])
+		if not dusmanlar[i]["data"].oldu_mu():
+			hedef_listesi.append(dusmanlar[i]["data"].isim)
+			_hedef_dusmanlar.append(dusmanlar[i]["data"])
 			idx_map.append(i)
 	set_meta("hedef_index_map", idx_map)
 	hedef_menu_guncelle()
