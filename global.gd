@@ -21,6 +21,8 @@ var party_data = [
 		"max_hp": 100,
 		"atk": 15,
 		"def": 10,
+		"qut": 200,
+		"max_qut": 200,
 		"silah": null,
 		"zirh": null,
 		"baygin": false
@@ -31,6 +33,8 @@ var party_data = [
 		"max_hp": 70,
 		"atk": 25,
 		"def": 5,
+		"qut": 200,
+		"max_qut": 200,
 		"silah": null,
 		"zirh": null,
 		"baygin": false

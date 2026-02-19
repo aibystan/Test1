@@ -90,9 +90,12 @@ func sadece_stat_goster():
 # --- KLAVYE ---
 func klavye_kontrol():
 	match menu_tipi:
-		"ANA":   ana_menu_kontrol()
-		"HEDEF": hedef_menu_kontrol()
-		"ACT":   act_menu_kontrol()
+		"ANA":          ana_menu_kontrol()
+		"HEDEF":        hedef_menu_kontrol()
+		"ACT":          act_menu_kontrol()
+		"SIHIR":        _sihir_menu_kontrol()
+		"PARTI_HEDEF":  _parti_hedef_kontrol()
+		"ITEM":         _item_menu_kontrol()
 
 # --- ANA MENÜ ---
 func ana_menu_kontrol():
@@ -183,7 +186,7 @@ func _stat_yaz(ki: int, node_isim: String):
 	var baygin = k.get("baygin", false)
 	p.get_node("IsimLabel").text = k["isim"] + (" 💀" if baygin else "")
 	p.get_node("HPLabel").text   = "HP %d/%d" % [k["hp"], k["max_hp"]]
-	p.get_node("QutLabel").text  = "QUT %d" % (Global.current_qut if ki == 0 else k.get("qut", 0))
+	p.get_node("QutLabel").text  = "QUT %d/%d" % [k.get("qut", 0), k.get("max_qut", 200)]
 	p.get_node("GPLabel").text   = "GP %d%%" % Global.graze_points
 	p.modulate = Color(0.5, 0.5, 0.5) if baygin else Color(1, 1, 1)
 
@@ -224,3 +227,161 @@ func _on_act_secildi(act_ismi: String):
 	act_panel.visible = false
 	menu_tipi = ""
 	if battle_manager: battle_manager.act_secildi(act_ismi, 0)
+
+# ============================================================
+# SİHİR MENÜSÜ
+# ============================================================
+
+var _sihir_verileri: Dictionary = {}
+var _sihir_karakter: String = ""
+var _sihir_battle_manager = null
+var _sihir_secenekler: Array = []
+
+func sihir_menusu_ac(secenekler: Array, sihirler: Dictionary, karakter_isim: String, bm):
+	_sihir_secenekler = secenekler
+	_sihir_verileri = sihirler
+	_sihir_karakter = karakter_isim
+	_sihir_battle_manager = bm
+	secili_index = 0
+	menu_tipi = "SIHIR"
+	ana_menu_panel.visible = false
+	act_panel.visible = true
+	act_panel.get_node("MarginContainer/Label").text = _sihir_metni_olustur()
+
+func _sihir_metni_olustur() -> String:
+	var text = "Sihir:\n"
+	for i in range(_sihir_secenekler.size()):
+		text += ("> " if i == secili_index else "  ") + _sihir_secenekler[i] + "\n"
+	return text
+
+func sihir_paneli_kapat():
+	act_panel.visible = false
+	menu_tipi = ""
+
+func tum_panelleri_kapat():
+	act_panel.visible = false
+	hedef_panel.visible = false
+	menu_tipi = ""
+
+# Parti hedef seçimi (iyileşme için)
+var _parti_liste: Array = []
+
+var _parti_mod: String = ""
+
+func parti_hedef_sec_goster(party: Array, mod: String = "SIHIR"):
+	_parti_liste = party
+	_parti_mod = mod
+	secili_index = 0
+	menu_tipi = "PARTI_HEDEF"
+	hedef_panel.visible = true
+	_parti_hedef_guncelle()
+
+func _parti_hedef_guncelle():
+	var text = "Hedef:\n"
+	for i in range(_parti_liste.size()):
+		var ok = "> " if i == secili_index else "  "
+		var k = _parti_liste[i]
+		var baygin = " 💀" if k.get("baygin", false) else ""
+		text += ok + k["isim"] + baygin + " HP:%d/%d\n" % [k["hp"], k["max_hp"]]
+	hedef_panel.get_node("MarginContainer/Label").text = text
+
+func _parti_hedef_kontrol():
+	if Input.is_action_just_pressed("ui_up"):
+		secili_index = (secili_index - 1 + _parti_liste.size()) % _parti_liste.size()
+		_parti_hedef_guncelle()
+	if Input.is_action_just_pressed("ui_down"):
+		secili_index = (secili_index + 1) % _parti_liste.size()
+		_parti_hedef_guncelle()
+	if Input.is_action_just_pressed("tus_z"):
+		hedef_panel.visible = false
+		menu_tipi = ""
+		if _parti_mod == "ITEM":
+			_parti_mod = ""
+			if _sihir_battle_manager:
+				_sihir_battle_manager.item_hedef_secildi(secili_index)
+		else:
+			_parti_mod = ""
+			if _sihir_battle_manager:
+				_sihir_battle_manager.parti_hedef_secildi(secili_index)
+	if Input.is_action_just_pressed("tus_x"):
+		hedef_panel.visible = false
+		ana_menu_panel.visible = true
+		menu_tipi = "ANA"
+
+func _sihir_menu_kontrol():
+	if Input.is_action_just_pressed("ui_up"):
+		secili_index = (secili_index - 1 + _sihir_secenekler.size()) % _sihir_secenekler.size()
+		act_panel.get_node("MarginContainer/Label").text = _sihir_metni_olustur()
+	if Input.is_action_just_pressed("ui_down"):
+		secili_index = (secili_index + 1) % _sihir_secenekler.size()
+		act_panel.get_node("MarginContainer/Label").text = _sihir_metni_olustur()
+	if Input.is_action_just_pressed("tus_z"):
+		_sihir_sec()
+	if Input.is_action_just_pressed("tus_x"):
+		sihir_paneli_kapat()
+		ana_menu_panel.visible = true
+		menu_tipi = "ANA"
+
+func _sihir_sec():
+	# Hangi sihir seçildi bul
+	var sqa_listesi = _sihir_verileri.get("SQA", [])
+	var dqa_listesi = _sihir_verileri.get("DQA", [])
+	var idx = secili_index
+
+	if idx < sqa_listesi.size():
+		var sihir = sqa_listesi[idx]
+		sihir_paneli_kapat()
+		if _sihir_battle_manager:
+			_sihir_battle_manager.sihir_secildi("SQA", sihir)
+	else:
+		idx -= sqa_listesi.size()
+		if idx < dqa_listesi.size():
+			var sihir = dqa_listesi[idx]
+			sihir_paneli_kapat()
+			if _sihir_battle_manager:
+				_sihir_battle_manager.sihir_secildi("DQA", sihir)
+
+# ============================================================
+# İTEM MENÜSÜ
+# ============================================================
+
+var _item_listesi_ui: Array = []
+var _item_battle_manager = null
+
+func item_menusu_ac(liste: Array, bm):
+	_item_listesi_ui = liste
+	_item_battle_manager = bm
+	_sihir_battle_manager = bm
+	secili_index = 0
+	menu_tipi = "ITEM"
+	ana_menu_panel.visible = false
+	act_panel.visible = true
+	_item_metni_guncelle()
+
+func _item_metni_guncelle():
+	var text = "Item:\n"
+	for i in range(_item_listesi_ui.size()):
+		var esya = _item_listesi_ui[i]["esya"]
+		var ok = "> " if i == secili_index else "  "
+		text += ok + esya.isim + "\n"
+	act_panel.get_node("MarginContainer/Label").text = text
+
+func item_paneli_kapat():
+	act_panel.visible = false
+	menu_tipi = ""
+
+func _item_menu_kontrol():
+	if Input.is_action_just_pressed("ui_up"):
+		secili_index = (secili_index - 1 + _item_listesi_ui.size()) % _item_listesi_ui.size()
+		_item_metni_guncelle()
+	if Input.is_action_just_pressed("ui_down"):
+		secili_index = (secili_index + 1) % _item_listesi_ui.size()
+		_item_metni_guncelle()
+	if Input.is_action_just_pressed("tus_z"):
+		item_paneli_kapat()
+		if _item_battle_manager:
+			_item_battle_manager.item_secildi(secili_index)
+	if Input.is_action_just_pressed("tus_x"):
+		item_paneli_kapat()
+		ana_menu_panel.visible = true
+		menu_tipi = "ANA"

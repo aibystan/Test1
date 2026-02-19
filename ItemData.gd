@@ -20,6 +20,8 @@ enum Tip { TUKETILEBILIR, SILAH, ZIRH }
 @export_group("Etkiler")
 # Eğer yiyecekse kaç can verir, silahsa kaç vurur?
 @export var etki_degeri: int = 10
+enum EtkiTuru { HP, QUT }
+@export var etki_turu: EtkiTuru = EtkiTuru.HP
 
 @export_group("Ekonomi")
 @export var fiyat: int = 100 # Varsayılan fiyat

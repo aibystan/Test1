@@ -45,6 +45,7 @@ func sonraki_diyalog() -> String:
 
 # --- DURUM ---
 var baris_edildi: bool = false
+var spareable: bool = false  # Gerekli eylemler yapıldı, insaf ile savaşı terk edebilir
 var yapilan_actler: Array[String] = []  # Hangi act'ler yapıldı
 
 func act_yap(act_ismi: String) -> String:
@@ -64,6 +65,7 @@ func act_yap(act_ismi: String) -> String:
 		
 		if tamamlandi:
 			baris_edildi = true
+			spareable = true
 			return isim + " artık savaşmak istemiyor!"
 	
 	# Varsayılan mesaj

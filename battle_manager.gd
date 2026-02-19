@@ -175,6 +175,8 @@ func flavor_text_sec() -> String:
 # ============================================================
 
 func player_eylem_sec(eylem_tipi: String):
+	# Eylem seçilince menüyü hemen kilitle (çift basış önlenir)
+	if battle_ui: battle_ui.menu_tipi = ""
 	match eylem_tipi:
 		"SALDIR": saldiri_baslat()
 		"SIHIR":  sihir_menusu_goster()
@@ -187,6 +189,18 @@ func saldiri_baslat():
 		battle_ui.hedef_secim_goster(dusmanlar)
 
 func hedef_secildi(hedef_index: int):
+	# Act modu: hedef seçildi, o düşmanın act listesini göster
+	if _bekleyen_eylem_mod == "ACT":
+		_bekleyen_eylem_mod = ""
+		_bekleyen_act_hedef = hedef_index
+		if battle_ui and hedef_index < dusmanlar.size():
+			battle_ui.act_secenekleri_goster(dusmanlar[hedef_index]["data"].acts)
+		return
+	# Sihir modundaysak sihir hasar fonksiyonuna yönlendir
+	if not _bekleyen_sihir.is_empty() and _bekleyen_sihir.get("tip") == "SQA":
+		sihir_hedef_secildi(hedef_index)
+		_bekleyen_sihir = {}
+		return
 	if timing_bar:
 		timing_bar.baslat()
 		var sonuc = await timing_bar.timing_tamamlandi
@@ -200,6 +214,8 @@ func hasar_ver(hedef_index: int, carpan: float):
 		player_turn_bitir()
 		return
 
+	if aktif_karakter_index >= player_characters.size():
+		return
 	var karakter = player_characters[aktif_karakter_index]
 	var damage = int(karakter["atk"] * carpan)
 	var dusman_dict = dusmanlar[hedef_index]
@@ -223,7 +239,8 @@ func hasar_ver(hedef_index: int, carpan: float):
 		return
 
 	await get_tree().create_timer(1.0).timeout
-	player_turn_bitir()
+	aktif_karakter_index += 1
+	_sonraki_aktif_karaktere_gec()
 
 func _dusman_hp_guncelle(hedef_index: int):
 	# Sadece veri güncellemesi — görsel HP barı hedef_secim_goster'de çizilir
@@ -293,6 +310,8 @@ func dusman_pattern_calistir():
 
 func _parti_hasar_uygula(miktar: int):
 	var etkilenenler = Global.parti_hasar_al(miktar, hasar_dagilim_index)
+	# Hasar mesajını göster
+	# Hasar mesajı metin kutusunda gösterilmiyor
 	# Bir sonraki hasar için index ilerlet (son etkilenen karakterden devam)
 	if etkilenenler.size() > 0:
 		var son_isim = etkilenenler[-1]["isim"]
@@ -351,30 +370,293 @@ func savas_kaybedildi():
 # MENÜ FONKSİYONLARI
 # ============================================================
 
-func sihir_menusu_goster():
-	print("Sihir menüsü - Henüz hazır değil")
-	await get_tree().create_timer(0.5).timeout
-	player_turn_bitir()
-
 func act_menusu_goster():
-	if battle_ui and dusmanlar.size() > 0:
-		battle_ui.act_secenekleri_goster(dusmanlar[0]["data"].acts)
+	# Önce düşman hedef seçimi
+	if battle_ui:
+		_bekleyen_eylem_mod = "ACT"
+		battle_ui.hedef_secim_goster(dusmanlar)
 
-func act_secildi(act_ismi: String, hedef_index: int):
+func act_secildi(act_ismi: String, _hedef_index_unused: int):
+	var hedef_index = _bekleyen_act_hedef
+	_bekleyen_act_hedef = 0
 	if hedef_index < dusmanlar.size():
-		var mesaj = dusmanlar[hedef_index]["data"].act_yap(act_ismi)
-		print(mesaj)
-		if dusmanlar[hedef_index]["data"].baris_edildi:
-			dusman_oldu(hedef_index)
+		var dusman_data = dusmanlar[hedef_index]["data"]
+		var mesaj = dusman_data.act_yap(act_ismi)
+		if message_box:
+			message_box.visible = true
+			message_box.flavor_goster(mesaj)
+		# baris_edildi -> spareable aktif, ama hemen ölmez
+		if dusman_data.baris_edildi:
+			dusman_data.spareable = true
+			dusman_data.baris_edildi = false
 	await get_tree().create_timer(1.5).timeout
-	player_turn_bitir()
+	# Eylem metni bitti, flavor text'e dön
+	if message_box:
+		var flavor = flavor_text_sec()
+		if flavor != "":
+			message_box.flavor_goster(flavor)
+	aktif_karakter_index += 1
+	_sonraki_aktif_karaktere_gec()
 
 func item_menusu_goster():
-	print("Item menüsü")
-	await get_tree().create_timer(0.5).timeout
-	player_turn_bitir()
+	# Envanterden sadece TUKETILEBILIR eşyaları filtrele
+	var kullanilabilir = []
+	for i in range(Global.inventory.size()):
+		var esya = Global.inventory[i]
+		if esya.tur == ItemData.Tip.TUKETILEBILIR:
+			kullanilabilir.append({"esya": esya, "index": i})
+	
+	if kullanilabilir.is_empty():
+		if message_box:
+			message_box.visible = true
+			message_box.flavor_goster("Kullanılabilecek eşya yok.")
+		await get_tree().create_timer(1.0).timeout
+		if message_box: message_box.flavor_goster(flavor_text_sec())
+		aktif_karakter_index += 1
+		_sonraki_aktif_karaktere_gec()
+		return
+	
+	_item_listesi = kullanilabilir
+	if battle_ui:
+		battle_ui.item_menusu_ac(_item_listesi, self)
+
+func item_secildi(liste_index: int):
+	if liste_index >= _item_listesi.size(): return
+	var secim = _item_listesi[liste_index]
+	var esya = secim["esya"]
+	var envanter_index = secim["index"]
+	
+	# Hedef karakter seçimi gerekiyor
+	_bekleyen_item = {"esya": esya, "envanter_index": envanter_index}
+	if battle_ui:
+		battle_ui.item_paneli_kapat()
+		battle_ui.parti_hedef_sec_goster(Global.party_data, "ITEM")
+
+func item_hedef_secildi(hedef_index: int):
+	if _bekleyen_item.is_empty(): return
+	var esya = _bekleyen_item["esya"]
+	var envanter_index = _bekleyen_item["envanter_index"]
+	_bekleyen_item = {}
+	
+	var k = Global.party_data[hedef_index]
+	var mesaj = ""
+	
+	if esya.etki_turu == ItemData.EtkiTuru.HP:
+		k["hp"] = min(k["hp"] + esya.etki_degeri, k["max_hp"])
+		if k.get("baygin", false) and k["hp"] > 0:
+			k["baygin"] = false
+		mesaj = esya.isim + " kullanıldı! " + k["isim"] + " +" + str(esya.etki_degeri) + " HP"
+	elif esya.etki_turu == ItemData.EtkiTuru.QUT:
+		k["qut"] = min(k.get("qut", 0) + esya.etki_degeri, k.get("max_qut", 200))
+		mesaj = esya.isim + " kullanıldı! " + k["isim"] + " +" + str(esya.etki_degeri) + " QUT"
+	
+	# Eşyayı envanterden çıkar
+	Global.envanterden_cikar(envanter_index)
+	
+	if message_box:
+		message_box.visible = true
+		message_box.flavor_goster(mesaj)
+	if battle_ui: battle_ui.stat_guncelle()
+	await get_tree().create_timer(1.5).timeout
+	if message_box: message_box.flavor_goster(flavor_text_sec())
+	aktif_karakter_index += 1
+	_sonraki_aktif_karaktere_gec()
 
 func insaf_menusu_goster():
-	print("İnsaf menüsü")
-	await get_tree().create_timer(0.5).timeout
-	player_turn_bitir()
+	# Tüm spareable düşmanları bul
+	var spareable_indexler = []
+	for i in range(dusmanlar.size()):
+		if dusmanlar[i]["data"].spareable:
+			spareable_indexler.append(i)
+
+	if spareable_indexler.is_empty():
+		if message_box:
+			message_box.visible = true
+			message_box.flavor_goster("Kimseyi affetmedin.")
+		await get_tree().create_timer(1.0).timeout
+		if message_box: message_box.flavor_goster(flavor_text_sec())
+		# player_turn_bitir() yerine direkt ilerle - await çakışmasını önler
+		aktif_karakter_index += 1
+		_sonraki_aktif_karaktere_gec()
+		return
+
+	# Sondan başa sil (index kaymaması için)
+	for i in range(spareable_indexler.size() - 1, -1, -1):
+		var idx = spareable_indexler[i]
+		var d = dusmanlar[idx]
+		if message_box:
+			message_box.visible = true
+			message_box.flavor_goster(d["data"].isim + " savaşı terk etti!")
+		await get_tree().create_timer(1.0).timeout
+		var node = d["node"]
+		if is_instance_valid(node): node.queue_free()
+		dusmanlar.remove_at(idx)
+		aktif_dusman_sayisi -= 1
+
+	if battle_ui: battle_ui.stat_guncelle()
+
+	if aktif_dusman_sayisi <= 0:
+		savas_kazanildi()
+		return
+
+	if message_box: message_box.flavor_goster(flavor_text_sec())
+	# Tüm spareable işlemi bitti, tur sona erer (index'i ilerletme, bitir)
+	aktif_karakter_index = player_characters.size()  # Turu zorla bitir
+	_sonraki_aktif_karaktere_gec()
+
+# ============================================================
+# SİHİR SİSTEMİ
+# ============================================================
+
+# Karakter başına sihir listeleri
+const SIHIRLER = {
+	"Ryu": {
+		"SQA": [
+			{"isim": "SaldiriSihri", "qut": 30, "aciklama": "Güçlü saldırı"},
+		],
+		"DQA": [
+			{"isim": "BeraberSihri", "qut_her": 25, "aciklama": "İki turun geçer"},
+		]
+	},
+	"Nina": {
+		"SQA": [
+			{"isim": "IyilesmeSihri", "qut": 20, "aciklama": "50 can iyileşir", "hedef_sec": true},
+		],
+		"DQA": []
+	}
+}
+
+var _bekleyen_sihir: Dictionary = {}
+var _bekleyen_eylem_mod: String = ""
+var _bekleyen_act_hedef: int = 0
+var _item_listesi: Array = []
+var _bekleyen_item: Dictionary = {}
+
+func sihir_menusu_goster():
+	var karakter = player_characters[aktif_karakter_index]
+	var isim = karakter["isim"]
+	var sihirler = SIHIRLER.get(isim, {"SQA": [], "DQA": []})
+
+	# Menü seçeneklerini oluştur
+	var secenekler = []
+	for s in sihirler["SQA"]:
+		secenekler.append("SQA: " + s["isim"] + " (" + str(s["qut"]) + " QUT)")
+	for s in sihirler["DQA"]:
+		secenekler.append("DQA: " + s["isim"] + " (" + str(s["qut_her"]) + "x2 QUT)")
+
+	if secenekler.is_empty():
+		print("Bu karakterin sihri yok.")
+		await get_tree().create_timer(0.5).timeout
+		aktif_karakter_index += 1
+		_sonraki_aktif_karaktere_gec()
+		return
+
+	if battle_ui:
+		battle_ui.sihir_menusu_ac(secenekler, sihirler, isim, self)
+
+func sihir_secildi(tip: String, sihir: Dictionary):
+	var karakter = player_characters[aktif_karakter_index]
+
+	# QUT kontrolü
+	var k_aktif = Global.party_data[aktif_karakter_index]
+	var maliyet = sihir.get("qut", sihir.get("qut_her", 0))
+	var qut_gerekli = maliyet * 2 if tip == "DQA" else maliyet
+	var qut_kontrol = (k_aktif.get("qut", 0) + Global.party_data[(aktif_karakter_index + 1) % Global.party_data.size()].get("qut", 0)) if tip == "DQA" else k_aktif.get("qut", 0)
+	if qut_kontrol < qut_gerekli:
+		print("Yetersiz QUT!")
+		if battle_ui: battle_ui.sihir_paneli_kapat()
+		await get_tree().create_timer(0.5).timeout
+		aktif_karakter_index += 1
+		_sonraki_aktif_karaktere_gec()
+		return
+
+	if battle_ui: battle_ui.sihir_paneli_kapat()
+	_bekleyen_sihir = {"tip": tip, "sihir": sihir}
+
+	match sihir["isim"]:
+		"SaldiriSihri":
+			# Hedef seçimi gerekli
+			hedef_secim_goster_sihir()
+		"IyilesmeSihri":
+			# Parti içi hedef seçimi
+			parti_hedef_sec_goster()
+		"BeraberSihri":
+			await _dqa_uygula(sihir)
+
+func hedef_secim_goster_sihir():
+	if battle_ui:
+		battle_ui.hedef_secim_goster(dusmanlar)
+
+# Saldırı sihri uygulandığında (hedef_secildi zaten çağrılıyor ama sihir modu kontrolü lazım)
+func sihir_hedef_secildi(hedef_index: int):
+	var sihir = _bekleyen_sihir.get("sihir", {})
+	var karakter = player_characters[aktif_karakter_index]
+	match sihir.get("isim", ""):
+		"SaldiriSihri":
+			var maliyet = sihir.get("qut", 30)
+			Global.party_data[aktif_karakter_index]["qut"] -= maliyet
+			var hasar = int(karakter["atk"] * 2.0)
+			if hedef_index < dusmanlar.size():
+				dusmanlar[hedef_index]["data"].hasar_al(hasar)
+				_dusman_hp_guncelle(hedef_index)
+				if message_box:
+					message_box.visible = true
+					message_box.sonuc_goster("Sihir! " + str(hasar) + " hasar!")
+				if dusmanlar[hedef_index]["data"].oldu_mu():
+					dusman_oldu(hedef_index)
+			if battle_ui: battle_ui.stat_guncelle()
+			await get_tree().create_timer(1.5).timeout
+			aktif_karakter_index += 1
+			_sonraki_aktif_karaktere_gec()
+
+func parti_hedef_sec_goster():
+	if battle_ui:
+		battle_ui.parti_hedef_sec_goster(Global.party_data)
+
+func parti_hedef_secildi(hedef_index: int):
+	var sihir = _bekleyen_sihir.get("sihir", {})
+	match sihir.get("isim", ""):
+		"IyilesmeSihri":
+			var maliyet = sihir.get("qut", 20)
+			Global.party_data[aktif_karakter_index]["qut"] -= maliyet
+			var k = Global.party_data[hedef_index]
+			k["hp"] = min(k["hp"] + 50, k["max_hp"])
+			if k.get("baygin", false) and k["hp"] > 0:
+				k["baygin"] = false
+			if message_box:
+				message_box.visible = true
+				message_box.sonuc_goster(k["isim"] + " 50 can kazandı!")
+			if battle_ui: battle_ui.stat_guncelle()
+			await get_tree().create_timer(1.5).timeout
+			aktif_karakter_index += 1
+			_sonraki_aktif_karaktere_gec()
+
+func _dqa_uygula(sihir: Dictionary):
+	var maliyet_her = sihir.get("qut_her", 25)
+	if Global.current_qut < maliyet_her * 2:
+		print("DQA için yeterli QUT yok!")
+		if battle_ui: battle_ui.sihir_paneli_kapat()
+		await get_tree().create_timer(0.5).timeout
+		aktif_karakter_index += 1
+		_sonraki_aktif_karaktere_gec()
+		return
+	if battle_ui: battle_ui.tum_panelleri_kapat()
+	# DQA: her iki karakterten de tüket
+	for k in Global.party_data:
+		k["qut"] = max(0, k.get("qut", 0) - maliyet_her)
+	if message_box:
+		message_box.visible = true
+		message_box.sonuc_goster("BeraberSihri! İki tur geçti.")
+	if battle_ui: battle_ui.stat_guncelle()
+	await get_tree().create_timer(1.5).timeout
+	# İki karakterin de turu geçer - önce Ryu'yu bitir
+	aktif_karakter_index += 1
+	# Nina da bayğınsa veya listede yoksa direkt düşman turuna geç
+	if aktif_karakter_index >= player_characters.size():
+		dusman_turn_basla()
+	else:
+		var nina = player_characters[aktif_karakter_index]
+		if nina.get("baygin", false):
+			dusman_turn_basla()
+		else:
+			player_turn_bitir()
