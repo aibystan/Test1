@@ -3,6 +3,9 @@ extends Node
 # --- OYUN SÜRESİ TAKİBİ ---
 var oyun_suresi_saniye: float = 0.0  # Toplam oyun süresi (saniye cinsinden)
 
+# --- DÜŞMAN TAKİBİ ---
+var defeated_enemies: Dictionary = {}  # Yenilen düşmanlar {id: true}
+
 var max_hp = 100
 var current_hp = 100
 

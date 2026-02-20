@@ -97,3 +97,11 @@ func animasyon_oynat(yon):
 	if yeni_animasyon != son_animasyon:
 		anim_sprite.play(yeni_animasyon)
 		son_animasyon = yeni_animasyon
+
+func reset_pozisyon(yeni_pozisyon: Vector2):
+	ayak_izleri.clear()
+	global_position = yeni_pozisyon
+	velocity = Vector2.ZERO
+	if anim_sprite.is_playing():
+		anim_sprite.stop()
+		anim_sprite.frame = 1

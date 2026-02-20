@@ -70,16 +70,14 @@ func overworld_don():
 	# Düşmanı yenildi olarak işaretle
 	if Global.has_meta("current_enemy_id"):
 		var enemy_id = Global.get_meta("current_enemy_id")
-		var defeat_key = "defeated_enemy_" + enemy_id
 		
 		print("Düşman yenildi olarak işaretleniyor:")
 		print("  Enemy ID: ", enemy_id)
-		print("  Defeat Key: ", defeat_key)
 		
-		Global.set_meta(defeat_key, true)
+		Global.defeated_enemies[enemy_id] = true
 		Global.remove_meta("current_enemy_id")
 		
-		print("İşaretleme tamamlandı!")
+		print("İşaretleme tamamlandı! Defeated enemies: ", Global.defeated_enemies)
 	else:
 		print("UYARI: current_enemy_id bulunamadı!")
 	

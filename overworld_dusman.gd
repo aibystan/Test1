@@ -29,10 +29,7 @@ func _ready():
 	print("Düşman ID: ", unique_id)
 	
 	# Bu düşman öldürüldü mü kontrol et
-	var defeat_key = "defeated_enemy_" + unique_id
-	print("Kontrol ediliyor: ", defeat_key)
-	
-	if Global.has_meta(defeat_key):
+	if Global.defeated_enemies.has(unique_id):
 		print("Bu düşman daha önce yenilmiş! Animasyon oynatılıyor...")
 		yenildi = true
 		await kaybol_animasyonu()

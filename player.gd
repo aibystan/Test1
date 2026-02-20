@@ -4,7 +4,7 @@ const SPEED = 150.0
 @onready var anim = $AnimatedSprite2D
 @onready var etkilesim_isini = $RayCast2D
 var etkilesim_yasakli = false
-var son_etkilesim_zamani = 0.0
+var son_etkilesim_zamani = 0.0  # Son etkileşimin zamanı
 
 func _physics_process(delta):
 	# --- SAHNE GEÇİŞİ KONTROLÜ ---
@@ -13,18 +13,6 @@ func _physics_process(delta):
 		$AnimatedSprite2D.stop() 
 		move_and_slide()
 		return 
-
-	# --- DİYALOG KONTROLÜ - HAREKET KİLİTLE ---
-	var diyalog_kutusu = get_tree().current_scene.find_child("DiyalogKutusu")
-	var diyalog_acik = diyalog_kutusu and diyalog_kutusu.visible
-	
-	if diyalog_acik:
-		# Diyalog açıkken hareket etme
-		velocity = Vector2.ZERO
-		anim.stop()
-		anim.frame = 1
-		move_and_slide()
-		return
 
 	# --- HAREKET ---
 	var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
@@ -54,18 +42,22 @@ func _physics_process(delta):
 	z_index = int(global_position.y)
 	
 	# --- ETKİLEŞİM KİLİT YÖNETİMİ ---
-	if diyalog_acik:
+	# Diyalog açıksa kilitle
+	var diyalog_kutusu = get_node_or_null("DiyalogKutusu")
+	if diyalog_kutusu and diyalog_kutusu.visible:
 		etkilesim_yasakli = true
 	else:
 		# Diyalog kapalı - son etkileşimden 0.5 saniye geçtiyse kilidi aç
-		if Time.get_ticks_msec() - son_etkilesim_zamani > 500:
+		if Time.get_ticks_msec() - son_etkilesim_zamani > 500:  # 500ms = 0.5 saniye
 			etkilesim_yasakli = false
 	
 	# --- ETKİLEŞİM (Z TUŞU) ---
+	# ÇOK ÖNEMLİ: Oyun duruyorsa ETKİLEŞİM YAPMA!
 	if Input.is_action_just_pressed("tus_z") and not etkilesim_yasakli and not get_tree().paused:
 		etkilesim_kontrol()
 
 func _ready():
+	# Pozisyon ayarlamaları
 	if Global.gidilecek_kapi_ismi != "":
 		var hedef_kapi = get_parent().find_child(Global.gidilecek_kapi_ismi)
 		if hedef_kapi:
@@ -75,14 +67,22 @@ func _ready():
 	
 	if Global.yuklenen_pozisyon != null:
 		global_position = Global.yuklenen_pozisyon
-		Global.yuklenen_pozisyon = null 
+		Global.yuklenen_pozisyon = null
 	
 	# --- TAKİPÇİ AYARLARI ---
+	call_deferred("takipci_ayarla")
+
+func takipci_ayarla():
 	var takipci = get_parent().get_node_or_null("Takipci")
 	if takipci:
-		takipci.ayak_izleri.clear()
-		takipci.global_position = global_position + Vector2(0, 32)
+		if takipci.has_method("reset_pozisyon"):
+			takipci.reset_pozisyon(global_position + Vector2(0, 32))
+		else:
+			# Fallback - eski yöntem
+			takipci.ayak_izleri.clear()
+			takipci.global_position = global_position + Vector2(0, 32)
 		takipci.hedef = self
+		print("Takipçi resetlendi: Player=", global_position, " Takipçi=", takipci.global_position)
 
 func etkilesim_kontrol():
 	if etkilesim_isini.is_colliding():
