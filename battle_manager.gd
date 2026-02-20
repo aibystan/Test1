@@ -359,8 +359,25 @@ func pattern_turunu_belirle(pattern_str: String) -> AttackPattern.PatternType:
 func savas_kazanildi():
 	print("Savaş Kazanıldı!")
 	savas_bitti.emit(true)
-	await get_tree().create_timer(2.0).timeout
-	get_tree().change_scene_to_file("res://Rooms/overworld.tscn")
+	
+	# Ödülleri hesapla
+	var toplam_xp = 0
+	var toplam_gold = 0
+	
+	for dusman_dict in dusmanlar:
+		var dusman = dusman_dict["data"]
+		# Her düşman XP ve gold veriyor
+		toplam_xp += dusman.max_hp  # Basit: Max HP kadar XP
+		toplam_gold += dusman.max_hp / 2  # Max HP'nin yarısı kadar gold
+	
+	# Victory screen göster
+	var victory_screen = get_tree().current_scene.get_node_or_null("BattleVictoryScreen")
+	if victory_screen:
+		victory_screen.goster(toplam_xp, toplam_gold)
+	else:
+		print("UYARI: Victory screen bulunamadı, overworld'e dönülüyor")
+		await get_tree().create_timer(2.0).timeout
+		get_tree().change_scene_to_file("res://Rooms/overworld.tscn")
 
 func savas_kaybedildi():
 	print("Savaş Kaybedildi!")

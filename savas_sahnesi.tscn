@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bg0o4u0nfu6i0" path="res://battle_ui.tscn" id="3_vlb07"]
 [ext_resource type="PackedScene" uid="uid://43u4u2g8uk4i" path="res://timing_bar.tscn" id="4_ow8yj"]
 [ext_resource type="PackedScene" uid="uid://dv21t0v6edgd7" path="res://speech_bubble.tscn" id="6_vlb07"]
+[ext_resource type="PackedScene" path="res://battle_victory_screen.tscn" id="7_7j6gx"]
 
 [node name="Savas Sahnesi" type="Node2D" unique_id=21708731]
 script = ExtResource("1_mldtv")
@@ -87,3 +88,5 @@ offset_left = 312.0
 offset_top = 187.0
 offset_right = 312.0
 offset_bottom = 187.0
+
+[node name="BattleVictoryScreen" parent="." unique_id=731637080 instance=ExtResource("7_7j6gx")]

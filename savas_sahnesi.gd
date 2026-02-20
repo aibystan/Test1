@@ -19,8 +19,15 @@ func _ready():
 	
 	battle_ui.battle_manager = battle_manager
 	
-	# Test: 2 düşmanla savaş başlat
-	test_savas_basla()
+	# Global'den düşman listesini al
+	if Global.has_meta("battle_enemies"):
+		var dusman_listesi = Global.get_meta("battle_enemies")
+		Global.remove_meta("battle_enemies")  # Temizle
+		battle_manager.savas_baslat(dusman_listesi)
+	else:
+		# Fallback - test savaşı
+		print("UYARI: Global'de düşman listesi yok, test savaşı başlatılıyor")
+		test_savas_basla()
 
 func test_savas_basla():
 	var slime = load("res://Enemies/enemy_slime.tres")
@@ -30,7 +37,6 @@ func test_savas_basla():
 		battle_manager.savas_baslat([slime, goblin])
 	else:
 		print("HATA: Düşman dosyaları bulunamadı!")
-		# Fallback - boş savaş
 		var dummy_enemy = EnemyData.new()
 		dummy_enemy.isim = "Test Düşman"
 		dummy_enemy.max_hp = 30
