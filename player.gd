@@ -4,7 +4,7 @@ const SPEED = 150.0
 @onready var anim = $AnimatedSprite2D
 @onready var etkilesim_isini = $RayCast2D
 var etkilesim_yasakli = false
-var son_etkilesim_zamani = 0.0  # Son etkileşimin zamanı
+var son_etkilesim_zamani = 0.0
 
 func _physics_process(delta):
 	# --- SAHNE GEÇİŞİ KONTROLÜ ---
@@ -13,6 +13,18 @@ func _physics_process(delta):
 		$AnimatedSprite2D.stop() 
 		move_and_slide()
 		return 
+
+	# --- DİYALOG KONTROLÜ - HAREKET KİLİTLE ---
+	var diyalog_kutusu = get_tree().current_scene.find_child("DiyalogKutusu")
+	var diyalog_acik = diyalog_kutusu and diyalog_kutusu.visible
+	
+	if diyalog_acik:
+		# Diyalog açıkken hareket etme
+		velocity = Vector2.ZERO
+		anim.stop()
+		anim.frame = 1
+		move_and_slide()
+		return
 
 	# --- HAREKET ---
 	var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
@@ -42,17 +54,14 @@ func _physics_process(delta):
 	z_index = int(global_position.y)
 	
 	# --- ETKİLEŞİM KİLİT YÖNETİMİ ---
-	# Diyalog açıksa kilitle
-	var diyalog_kutusu = get_node_or_null("DiyalogKutusu")
-	if diyalog_kutusu and diyalog_kutusu.visible:
+	if diyalog_acik:
 		etkilesim_yasakli = true
 	else:
 		# Diyalog kapalı - son etkileşimden 0.5 saniye geçtiyse kilidi aç
-		if Time.get_ticks_msec() - son_etkilesim_zamani > 500:  # 500ms = 0.5 saniye
+		if Time.get_ticks_msec() - son_etkilesim_zamani > 500:
 			etkilesim_yasakli = false
 	
 	# --- ETKİLEŞİM (Z TUŞU) ---
-	# ÇOK ÖNEMLİ: Oyun duruyorsa ETKİLEŞİM YAPMA!
 	if Input.is_action_just_pressed("tus_z") and not etkilesim_yasakli and not get_tree().paused:
 		etkilesim_kontrol()
 

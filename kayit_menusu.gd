@@ -87,32 +87,32 @@ func slot_bilgilerini_guncelle():
 	# Slot 1
 	var slot1_bilgi = Global.kayit_bilgisi_al(1)
 	if slot1_bilgi["var"]:
-		var zaman_str = str(slot1_bilgi["zaman"])
-		var zaman_parcalari = zaman_str.split(" ")
-		var saat = zaman_parcalari[1] if zaman_parcalari.size() > 1 else zaman_str
-		slot1_label.text = "Slot 1: " + saat + "\n       " + str(slot1_bilgi["altin"]) + " Altın"
+		var sure = format_playtime(slot1_bilgi["oyun_suresi"])
+		slot1_label.text = "> Slot 1: " + sure + "\n       " + str(slot1_bilgi["altin"]) + " Altın"
 	else:
 		slot1_label.text = "Slot 1: Boş"
 	
 	# Slot 2
 	var slot2_bilgi = Global.kayit_bilgisi_al(2)
 	if slot2_bilgi["var"]:
-		var zaman_str = str(slot2_bilgi["zaman"])
-		var zaman_parcalari = zaman_str.split(" ")
-		var saat = zaman_parcalari[1] if zaman_parcalari.size() > 1 else zaman_str
-		slot2_label.text = "Slot 2: " + saat + "\n       " + str(slot2_bilgi["altin"]) + " Altın"
+		var sure = format_playtime(slot2_bilgi["oyun_suresi"])
+		slot2_label.text = "Slot 2: " + sure + "\n       " + str(slot2_bilgi["altin"]) + " Altın"
 	else:
 		slot2_label.text = "Slot 2: Boş"
 	
 	# Slot 3
 	var slot3_bilgi = Global.kayit_bilgisi_al(3)
 	if slot3_bilgi["var"]:
-		var zaman_str = str(slot3_bilgi["zaman"])
-		var zaman_parcalari = zaman_str.split(" ")
-		var saat = zaman_parcalari[1] if zaman_parcalari.size() > 1 else zaman_str
-		slot3_label.text = "Slot 3: " + saat + "\n       " + str(slot3_bilgi["altin"]) + " Altın"
+		var sure = format_playtime(slot3_bilgi["oyun_suresi"])
+		slot3_label.text = "Slot 3: " + sure + "\n       " + str(slot3_bilgi["altin"]) + " Altın"
 	else:
 		slot3_label.text = "Slot 3: Boş"
+
+func format_playtime(saniye: float) -> String:
+	var toplam_saniye = int(saniye)
+	var dakika = toplam_saniye / 60
+	var sn = toplam_saniye % 60
+	return "%d:%02d" % [dakika, sn]
 
 func secimi_guncelle():
 	for i in range(slot_labels.size()):

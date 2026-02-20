@@ -1,7 +1,6 @@
 [gd_scene format=4 uid="uid://b4spsm3c5ulmv"]
 
 [ext_resource type="PackedScene" uid="uid://phicum10035h" path="res://player.tscn" id="1_omswd"]
-[ext_resource type="Script" uid="uid://c2wylwtj0vg6g" path="res://ItemData.gd" id="2_4op41"]
 [ext_resource type="Texture2D" uid="uid://0ii0g4nqe5qr" path="res://icon.svg" id="2_nyb65"]
 [ext_resource type="Resource" uid="uid://dc0jljdtjyiqs" path="res://Items/elma.tres" id="3_sgylu"]
 [ext_resource type="PackedScene" uid="uid://burhf1mlm0ve7" path="res://diyalog_kutusu.tscn" id="4_87uyu"]
@@ -11,9 +10,10 @@
 [ext_resource type="PackedScene" uid="uid://c4yb5qw8r7xfj" path="res://kayit_menusu.tscn" id="7_7sv5v"]
 [ext_resource type="PackedScene" uid="uid://ctxj5em6pfdal" path="res://envanter_menusu.tscn" id="7_87uyu"]
 [ext_resource type="PackedScene" uid="uid://brg2hgg6js3jp" path="res://sandik.tscn" id="8_5xcxp"]
-[ext_resource type="Resource" uid="uid://cn0l01683jfc1" path="res://Items/pasli_kilic.tres" id="9_lgqhf"]
 [ext_resource type="PackedScene" uid="uid://ck6ljpbs5k082" path="res://tuccar.tscn" id="10_p0ssl"]
 [ext_resource type="PackedScene" uid="uid://dgyampvd8x3vh" path="res://dukkan_menusu.tscn" id="11_vldoy"]
+[ext_resource type="Script" uid="uid://c2wylwtj0vg6g" path="res://ItemData.gd" id="13_7sv5v"]
+[ext_resource type="Resource" uid="uid://cn0l01683jfc1" path="res://Items/pasli_kilic.tres" id="14_f02we"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_pyigi"]
 load_path = "res://.godot/imported/tilemap_packed.png-7b301e6705a57389d2cd02d385b33920.ctex"
@@ -323,10 +323,6 @@ tile_map_data = PackedByteArray("AAAKAAcAAAADAAEAAAADAAYAAAABAAAAAAAEAAYAAAACAAA
 tile_set = SubResource("TileSet_omswd")
 y_sort_origin = -15
 
-[node name="Tuccar" parent="." unique_id=714985829 instance=ExtResource("10_p0ssl")]
-position = Vector2(71, 182)
-satilacak_urunler = Array[ExtResource("2_4op41")]([ExtResource("3_sgylu"), ExtResource("9_lgqhf")])
-
 [node name="KayitTasi" parent="." unique_id=1418004923 instance=ExtResource("6_87uyu")]
 position = Vector2(321, 68)
 
@@ -368,5 +364,9 @@ icerik = ExtResource("3_sgylu")
 
 [node name="DukkanMenusu" parent="." unique_id=2045259005 instance=ExtResource("11_vldoy")]
 visible = false
+
+[node name="Tuccar" parent="." unique_id=714985829 instance=ExtResource("10_p0ssl")]
+position = Vector2(70, 181)
+satilacak_urunler = Array[ExtResource("13_7sv5v")]([ExtResource("3_sgylu"), ExtResource("14_f02we")])
 
 [editable path="DiyalogKutusu"]

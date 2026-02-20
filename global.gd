@@ -1,5 +1,8 @@
 extends Node
 
+# --- OYUN SÜRESİ TAKİBİ ---
+var oyun_suresi_saniye: float = 0.0  # Toplam oyun süresi (saniye cinsinden)
+
 var max_hp = 100
 var current_hp = 100
 
@@ -128,12 +131,13 @@ func oyunu_kaydet(oyuncu_pozisyonu: Vector2, sahne_yolu: String, slot: int = 1):
 		"poz_y": oyuncu_pozisyonu.y,
 		"sahne": sahne_yolu,
 		"altin": altin,
-		"qut": current_qut,  # Qut kaydediliyor (HP kaydedilmiyor çünkü full oluyor)
+		"qut": current_qut,
 		"graze": graze_points,
 		"envanter": envanter_kaydi,
 		"party": party_kaydi,
 		"secili_karakter": secili_karakter_index,
-		"kayit_zamani": Time.get_datetime_string_from_system()
+		"kayit_zamani": Time.get_datetime_string_from_system(),
+		"oyun_suresi": oyun_suresi_saniye  # Oyun süresi eklendi
 	}
 	
 	# Slot'a göre dosya seç
@@ -178,7 +182,7 @@ func kayit_bilgisi_al(slot: int) -> Dictionary:
 	if veriler:
 		return {
 			"var": true,
-			"zaman": veriler.get("kayit_zamani", "Bilinmiyor"),
+			"oyun_suresi": veriler.get("oyun_suresi", 0.0),
 			"sahne": veriler.get("sahne", ""),
 			"altin": veriler.get("altin", 0)
 		}
@@ -209,6 +213,9 @@ func oyunu_yukle(slot: int = 1):
 		current_qut = veriler.get("qut", 200)
 		graze_points = veriler.get("graze", 0)
 		secili_karakter_index = veriler.get("secili_karakter", 0)
+		
+		# Oyun süresi yükle
+		oyun_suresi_saniye = veriler.get("oyun_suresi", 0.0)
 		
 		# Envanter yükle
 		inventory.clear()
@@ -255,6 +262,17 @@ func _ready():
 		print("Test eşyaları envantere eklendi! Toplam: ", inventory.size(), "/", MAX_ENVANTER_KAPASITESI)
 	else:
 		print("HATA: Eşya dosyaları bulunamadı! Yolları kontrol et.")
+
+func _process(delta):
+	# Oyun pause değilse süreyi say
+	if not get_tree().paused:
+		oyun_suresi_saniye += delta
+
+func oyun_suresi_string() -> String:
+	var toplam_saniye = int(oyun_suresi_saniye)
+	var dakika = toplam_saniye / 60
+	var saniye = toplam_saniye % 60
+	return "%d:%02d" % [dakika, saniye]
 
 # --- EŞYA KULLANIM FONKSİYONLARI ---
 func karakteri_iyilestir(miktar):
