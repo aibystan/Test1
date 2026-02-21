@@ -9,11 +9,11 @@ script = ExtResource("1_8xoyw")
 [node name="Arkaplan" type="ColorRect" parent="." unique_id=786036404]
 anchors_preset = -1
 anchor_left = 0.014
-anchor_top = 0.822
+anchor_top = 0.74700004
 anchor_right = 0.994
 anchor_bottom = 0.98600006
 offset_left = 0.03999996
-offset_top = -26.920013
+offset_top = 0.07998657
 offset_right = -0.16003418
 offset_bottom = 0.039978027
 grow_horizontal = 2

@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://kgjw0uqj0uoj" path="res://takipci.tscn" id="4_ppr5b"]
 [ext_resource type="PackedScene" uid="uid://b540j4t1qo7b8" path="res://kayit_tasi.tscn" id="6_87uyu"]
 [ext_resource type="PackedScene" uid="uid://31fxfnws65eq" path="res://kapi.tscn" id="6_m4qw5"]
+[ext_resource type="Script" uid="uid://c4av62uns8qcv" path="res://dialog_secenek.gd" id="6_rxjqm"]
 [ext_resource type="PackedScene" uid="uid://c4yb5qw8r7xfj" path="res://kayit_menusu.tscn" id="7_7sv5v"]
 [ext_resource type="PackedScene" uid="uid://ctxj5em6pfdal" path="res://envanter_menusu.tscn" id="7_87uyu"]
 [ext_resource type="PackedScene" uid="uid://brg2hgg6js3jp" path="res://sandik.tscn" id="8_5xcxp"]
@@ -308,6 +309,16 @@ texture = SubResource("CompressedTexture2D_pyigi")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_5xcxp")
 
+[sub_resource type="Resource" id="Resource_a3irj"]
+script = ExtResource("6_rxjqm")
+secenek_metni = "Wank"
+cevap_mesajlari = Array[String](["Happens to the best of us."])
+
+[sub_resource type="Resource" id="Resource_ndujg"]
+script = ExtResource("6_rxjqm")
+secenek_metni = "Breakfast"
+cevap_mesajlari = Array[String](["Well you are no fun are you."])
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_824ie"]
 size = Vector2(23, 21)
 
@@ -341,6 +352,8 @@ hedef_spawn_ismi = "Kapi_Ev"
 
 [node name="Sign" type="StaticBody2D" parent="." unique_id=354355636 groups=["interactable"]]
 script = ExtResource("4_omswd")
+giris_mesajlari = Array[String](["What would you like to do?", "Let's get into that right now.", "Have a wank or have a breakfast?"])
+secenekler = Array[ExtResource("6_rxjqm")]([SubResource("Resource_a3irj"), SubResource("Resource_ndujg")])
 
 [node name="Sprite2D" type="Sprite2D" parent="Sign" unique_id=2108897728]
 position = Vector2(114, 33)
