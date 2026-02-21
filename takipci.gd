@@ -1,24 +1,55 @@
 extends CharacterBody2D
 
-@export var hedef: Node2D 
+@export var hedef_ismi: String = "Player"  # Hedefin ismini belirt
 
 # --- AYARLAR ---
-var hiz = 150            # Player hızıyla AYNI olsun
-var iz_sikligi = 12      # Daha seyrek iz - titreme azalır
-var takip_gecikmesi = 3 # Daha fazla mesafe
-var minimum_hareket_mesafesi = 8  # Bu mesafeden azsa hareket etme
+var hiz = 150
+var iz_sikligi = 4
+var takip_gecikmesi = 8
+var minimum_hareket_mesafesi = 3
 
+var hedef: Node2D = null  # Takip edilecek hedef
 var ayak_izleri = [] 
-var son_animasyon = ""  # Son oynatılan animasyonu hatırla
+var son_animasyon = ""
 @onready var anim_sprite = $AnimatedSprite2D
 
 func _ready():
-	# Başlangıçta hedefi bul (player)
-	if hedef == null:
-		hedef = get_parent().get_node_or_null("Player")
+	print("=== TAKİPÇİ BAŞLATILIYOR ===")
+	print("Aranan hedef ismi: ", hedef_ismi)
+	
+	# Scene tree'den hedefi bul - birkaç yöntem dene
+	await get_tree().process_frame
+	
+	# Yöntem 1: find_child
+	hedef = get_tree().current_scene.find_child(hedef_ismi)
+	
+	if not hedef:
+		print("find_child başarısız, get_node deniyor...")
+		# Yöntem 2: get_node
+		hedef = get_tree().current_scene.get_node_or_null(hedef_ismi)
+	
+	if not hedef:
+		print("get_node başarısız, tüm child'ları arıyorum...")
+		# Yöntem 3: Tüm child'ları tara
+		for child in get_tree().current_scene.get_children():
+			print("  Bulunan node: ", child.name)
+			if child.name == hedef_ismi:
+				hedef = child
+				break
+	
+	if hedef:
+		print("✓ Takipçi hedefi buldu: ", hedef.name)
+		print("  Hedef pozisyonu: ", hedef.global_position)
+		# İlk pozisyonu ayarla
+		global_position = hedef.global_position + Vector2(0, 32)
+		print("  Takipçi pozisyonu ayarlandı: ", global_position)
+	else:
+		print("✗ HATA: Takipçi '", hedef_ismi, "' isimli hedefi bulamadı!")
+		print("  Lütfen hedef isminin doğru olduğundan emin ol")
 
 func _physics_process(_delta):
-	if hedef == null: return
+	if hedef == null: 
+		return
 	
 	# --- 1. AKILLI KAYIT SİSTEMİ ---
 	var son_nokta = hedef.global_position
@@ -56,12 +87,12 @@ func _physics_process(_delta):
 		velocity = yon * hiz
 		move_and_slide()
 		
-		# Animasyonu oynat (sadece gerçekten hareket varsa)
-		if velocity.length() > 20:
+		# Animasyonu oynat
+		if velocity.length() > 10:
 			animasyon_oynat(yon)
 		
-		# Hedefe vardıysa noktayı sil
-		if mesafe_hedefe < 8:
+		# Hedefe çok yaklaştıysa noktayı sil
+		if mesafe_hedefe < minimum_hareket_mesafesi * 1.5:
 			ayak_izleri.pop_front()
 			
 	else:
@@ -105,3 +136,8 @@ func reset_pozisyon(yeni_pozisyon: Vector2):
 	if anim_sprite.is_playing():
 		anim_sprite.stop()
 		anim_sprite.frame = 1
+	
+	# Physics'i geçici kapat
+	set_physics_process(false)
+	await get_tree().create_timer(0.5).timeout
+	set_physics_process(true)

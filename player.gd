@@ -68,21 +68,9 @@ func _ready():
 	if Global.yuklenen_pozisyon != null:
 		global_position = Global.yuklenen_pozisyon
 		Global.yuklenen_pozisyon = null
+		print("Player pozisyonu battle'dan yüklendi: ", global_position)
 	
-	# --- TAKİPÇİ AYARLARI ---
-	call_deferred("takipci_ayarla")
-
-func takipci_ayarla():
-	var takipci = get_parent().get_node_or_null("Takipci")
-	if takipci:
-		if takipci.has_method("reset_pozisyon"):
-			takipci.reset_pozisyon(global_position + Vector2(0, 32))
-		else:
-			# Fallback - eski yöntem
-			takipci.ayak_izleri.clear()
-			takipci.global_position = global_position + Vector2(0, 32)
-		takipci.hedef = self
-		print("Takipçi resetlendi: Player=", global_position, " Takipçi=", takipci.global_position)
+	# Takipçi artık bağımsız - burada ayarlama yapma
 
 func etkilesim_kontrol():
 	if etkilesim_isini.is_colliding():

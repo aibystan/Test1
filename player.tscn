@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://dr87yatjsw4hx" path="res://player.gd" id="1_i3pqv"]
 [ext_resource type="Texture2D" uid="uid://bhscrarqymwo7" path="res://universal-lpc-sprite_male_01_walk-3frame_1.png" id="2_hqtel"]
-[ext_resource type="PackedScene" uid="uid://kgjw0uqj0uoj" path="res://takipci.tscn" id="2_sweqy"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_v726c"]
 size = Vector2(20, 14)
@@ -145,11 +144,6 @@ animations = [{
 [node name="Player" type="CharacterBody2D" unique_id=774747031]
 y_sort_enabled = true
 script = ExtResource("1_i3pqv")
-
-[node name="Takipci" parent="." unique_id=1190120645 node_paths=PackedStringArray("hedef") instance=ExtResource("2_sweqy")]
-top_level = true
-position = Vector2(0, -2)
-hedef = NodePath("..")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1468340466]
 position = Vector2(0, -2)

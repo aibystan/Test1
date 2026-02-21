@@ -5,6 +5,7 @@
 [ext_resource type="Resource" uid="uid://dc0jljdtjyiqs" path="res://Items/elma.tres" id="3_sgylu"]
 [ext_resource type="PackedScene" uid="uid://burhf1mlm0ve7" path="res://diyalog_kutusu.tscn" id="4_87uyu"]
 [ext_resource type="Script" uid="uid://dh018w1upylsi" path="res://sign.gd" id="4_omswd"]
+[ext_resource type="PackedScene" uid="uid://kgjw0uqj0uoj" path="res://takipci.tscn" id="4_ppr5b"]
 [ext_resource type="PackedScene" uid="uid://b540j4t1qo7b8" path="res://kayit_tasi.tscn" id="6_87uyu"]
 [ext_resource type="PackedScene" uid="uid://31fxfnws65eq" path="res://kapi.tscn" id="6_m4qw5"]
 [ext_resource type="PackedScene" uid="uid://c4yb5qw8r7xfj" path="res://kayit_menusu.tscn" id="7_7sv5v"]
@@ -335,6 +336,9 @@ gidilecek_sahne = "uid://dt01twinwq1dv"
 hedef_spawn_ismi = "Kapi_Ev"
 
 [node name="Player" parent="." unique_id=774747031 instance=ExtResource("1_omswd")]
+position = Vector2(300, 200)
+
+[node name="Takipci" parent="." unique_id=1190120645 instance=ExtResource("4_ppr5b")]
 
 [node name="Sign" type="StaticBody2D" parent="." unique_id=354355636 groups=["interactable"]]
 script = ExtResource("4_omswd")
