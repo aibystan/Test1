@@ -41,7 +41,7 @@ func _ready():
 		print("✓ Takipçi hedefi buldu: ", hedef.name)
 		print("  Hedef pozisyonu: ", hedef.global_position)
 		# İlk pozisyonu ayarla
-		global_position = hedef.global_position + Vector2(0, 32)
+		global_position = hedef.global_position
 		print("  Takipçi pozisyonu ayarlandı: ", global_position)
 	else:
 		print("✗ HATA: Takipçi '", hedef_ismi, "' isimli hedefi bulamadı!")

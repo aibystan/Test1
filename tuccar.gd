@@ -20,11 +20,11 @@ func _process(_delta):
 	if oyuncu_yakin and Input.is_action_just_pressed("tus_z") and not etkilesim_yasakli:
 		if diyalog_kutusu:
 			var soyleyeceklerim = [
-				"Hoş geldin gezgin!",
-				"Elimde çok taze mallar var.",
+				"This is a test dialogue.\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+				"Elimde cok taze mallar var.",
 				"Bir bakmak ister misin?"
 			]
-			diyalog_kutusu.baslat("Gezgin Tüccar", soyleyeceklerim, self.dukkan_ac)
+			diyalog_kutusu.baslat("Merchant", soyleyeceklerim, self.dukkan_ac)
 			etkilesim_yasakli = true
 
 # Bu fonksiyon, konuşma bitince Diyalog Kutusu tarafından çağırılacak

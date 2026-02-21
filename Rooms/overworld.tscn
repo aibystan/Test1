@@ -336,7 +336,6 @@ gidilecek_sahne = "uid://dt01twinwq1dv"
 hedef_spawn_ismi = "Kapi_Ev"
 
 [node name="Player" parent="." unique_id=774747031 instance=ExtResource("1_omswd")]
-position = Vector2(300, 200)
 
 [node name="Takipci" parent="." unique_id=1190120645 instance=ExtResource("4_ppr5b")]
 

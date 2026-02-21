@@ -14,6 +14,23 @@ func _physics_process(delta):
 		move_and_slide()
 		return 
 
+	# --- DİYALOG KİLİT YÖNETİMİ ---
+	var diyalog_kutusu = get_tree().current_scene.find_child("DiyalogKutusu")
+	var diyalog_acik = diyalog_kutusu and diyalog_kutusu.visible
+	
+	if diyalog_acik:
+		etkilesim_yasakli = true
+		# Diyalog açıkken hareketi durdur
+		velocity = Vector2.ZERO
+		anim.stop()
+		anim.frame = 1
+		move_and_slide()
+		return
+	else:
+		# Diyalog kapalı - son etkileşimden 0.5 saniye geçtiyse kilidi aç
+		if Time.get_ticks_msec() - son_etkilesim_zamani > 500:
+			etkilesim_yasakli = false
+
 	# --- HAREKET ---
 	var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	
@@ -40,16 +57,6 @@ func _physics_process(delta):
 	
 	# --- DERİNLİK AYARI (Y-SORT) ---
 	z_index = int(global_position.y)
-	
-	# --- ETKİLEŞİM KİLİT YÖNETİMİ ---
-	# Diyalog açıksa kilitle
-	var diyalog_kutusu = get_node_or_null("DiyalogKutusu")
-	if diyalog_kutusu and diyalog_kutusu.visible:
-		etkilesim_yasakli = true
-	else:
-		# Diyalog kapalı - son etkileşimden 0.5 saniye geçtiyse kilidi aç
-		if Time.get_ticks_msec() - son_etkilesim_zamani > 500:  # 500ms = 0.5 saniye
-			etkilesim_yasakli = false
 	
 	# --- ETKİLEŞİM (Z TUŞU) ---
 	# ÇOK ÖNEMLİ: Oyun duruyorsa ETKİLEŞİM YAPMA!
