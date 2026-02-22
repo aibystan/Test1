@@ -5,6 +5,7 @@ extends CanvasLayer
 @onready var ana_menu_panel = $AnaMenuPanel
 @onready var hedef_panel = $HedefPanel
 @onready var act_panel = $ActPanel
+@onready var blur_rect = $BlurRect
 
 var battle_manager: BattleManager
 var menu_tipi: String = "ANA"
@@ -136,6 +137,7 @@ func hedef_menu_kontrol():
 		menu_tipi = "ANA"
 		secili_index = _ana_menu_index
 		ana_menu_guncelle()
+		blur_rect.visible = false
 
 func hedef_menu_guncelle():
 	var container = hedef_panel.get_node_or_null("MarginContainer/HedefContainer")
@@ -235,6 +237,7 @@ func act_menu_kontrol():
 		menu_tipi = "ANA"
 		secili_index = _ana_menu_index
 		ana_menu_guncelle()
+		blur_rect.visible = false
 
 func act_menu_guncelle():
 	var text = "Act:\n"
@@ -244,6 +247,7 @@ func act_menu_guncelle():
 
 # --- TURN ---
 func turn_menusu_goster(_k: Dictionary):
+	blur_rect.visible = false
 	menu_tipi = "ANA"
 	secili_index = 0
 	stat_guncelle()
@@ -268,6 +272,7 @@ func _stat_yaz(ki: int, node_isim: String):
 # --- HEDEF / ACT ---
 func hedef_secim_goster(dusmanlar: Array):
 	_ana_menu_index = secili_index
+	blur_rect.visible = true
 	ana_menu_panel.visible = false
 	hedef_panel.visible = true
 	menu_tipi = "HEDEF"
@@ -316,6 +321,7 @@ var _sihir_secenekler: Array = []
 
 func sihir_menusu_ac(secenekler: Array, sihirler: Dictionary, karakter_isim: String, bm):
 	_sihir_secenekler = secenekler
+	blur_rect.visible = true
 	_sihir_verileri = sihirler
 	_sihir_karakter = karakter_isim
 	_sihir_battle_manager = bm
@@ -326,6 +332,7 @@ func sihir_menusu_ac(secenekler: Array, sihirler: Dictionary, karakter_isim: Str
 	act_panel.visible = true
 	act_panel.get_node("MarginContainer/Label").text = _sihir_metni_olustur()
 	_sihir_panel_yeniden_boyutlandir()
+	# QUT label oluştur (yoksa)
 	if not act_panel.get_node_or_null("QutLabel"):
 		var qut_lbl = Label.new()
 		qut_lbl.name = "QutLabel"
@@ -396,6 +403,7 @@ func sihir_paneli_kapat():
 	menu_tipi = ""
 
 func tum_panelleri_kapat():
+	blur_rect.visible = false
 	act_panel.visible = false
 	hedef_panel.visible = false
 	menu_tipi = ""
@@ -446,6 +454,7 @@ func _parti_hedef_kontrol():
 		menu_tipi = "ANA"
 		secili_index = _ana_menu_index
 		ana_menu_guncelle()
+		blur_rect.visible = false
 
 func _sihir_menu_kontrol():
 	if Input.is_action_just_pressed("ui_up"):
@@ -466,6 +475,7 @@ func _sihir_menu_kontrol():
 		menu_tipi = "ANA"
 		secili_index = _ana_menu_index
 		ana_menu_guncelle()
+		blur_rect.visible = false
 
 func _sihir_sec():
 	# Hangi sihir seçildi bul
@@ -495,6 +505,7 @@ var _item_battle_manager = null
 
 func item_menusu_ac(liste: Array, bm):
 	_item_listesi_ui = liste
+	blur_rect.visible = true
 	_item_battle_manager = bm
 	_sihir_battle_manager = bm
 	_ana_menu_index = secili_index
@@ -574,3 +585,4 @@ func _item_menu_kontrol():
 		menu_tipi = "ANA"
 		secili_index = _ana_menu_index
 		ana_menu_guncelle()
+		blur_rect.visible = false
