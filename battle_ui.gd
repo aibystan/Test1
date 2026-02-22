@@ -9,12 +9,13 @@ extends CanvasLayer
 var battle_manager: BattleManager
 var menu_tipi: String = "ANA"
 var secili_index: int = 0
+var _ana_menu_index: int = 0  # Alt panelden çıkınca buraya dön
 var secenekler: Array = []
 var hedef_listesi: Array = []
 var _hedef_dusmanlar: Array = []
 
 const SH = 360
-const PH = 55
+const PH = 90
 const STATS_W = 200
 const MENU_W = 440
 
@@ -121,10 +122,10 @@ func ana_menu_sec():
 
 # --- HEDEF MENÜ ---
 func hedef_menu_kontrol():
-	if Input.is_action_just_pressed("ui_left"):
+	if Input.is_action_just_pressed("ui_up"):
 		secili_index = (secili_index - 1 + hedef_listesi.size()) % hedef_listesi.size()
 		hedef_menu_guncelle()
-	if Input.is_action_just_pressed("ui_right"):
+	if Input.is_action_just_pressed("ui_down"):
 		secili_index = (secili_index + 1) % hedef_listesi.size()
 		hedef_menu_guncelle()
 	if Input.is_action_just_pressed("tus_z"):
@@ -133,18 +134,90 @@ func hedef_menu_kontrol():
 		hedef_panel.visible = false
 		ana_menu_panel.visible = true
 		menu_tipi = "ANA"
+		secili_index = _ana_menu_index
+		ana_menu_guncelle()
 
 func hedef_menu_guncelle():
-	var text = "Hedef:\n"
+	var container = hedef_panel.get_node_or_null("MarginContainer/HedefContainer")
+	if not container:
+		return
+	var satirlar = container.get_children()
 	for i in range(hedef_listesi.size()):
-		var ok = "> " if i == secili_index else "  "
+		if i >= satirlar.size():
+			break
+		var satir = satirlar[i]
+		var isim_lbl = satir.get_node_or_null("IsimLabel")
+		if isim_lbl:
+			var ok = "> " if i == secili_index else "  "
+			isim_lbl.text = ok + hedef_listesi[i]
 		var d = _hedef_dusmanlar[i] if i < _hedef_dusmanlar.size() else null
-		var bar = ""
 		if d:
-			var dolu = int(float(d.current_hp) / float(d.max_hp) * 6)
-			bar = " [" + "|".repeat(dolu) + ".".repeat(6 - dolu) + "]"
-		text += ok + hedef_listesi[i] + bar + "\n"
-	hedef_panel.get_node("MarginContainer/Label").text = text
+			var oran = clampf(float(d.current_hp) / float(d.max_hp), 0.0, 1.0)
+			var fg = satir.get_node_or_null("HPBg/HPFg")
+			if fg:
+				fg.anchor_right = oran
+				fg.offset_right = 0.0
+func _hedef_satirlari_olustur():
+	var BAR_GENISLIK = 120.0
+	var BAR_YUKSEKLIK = 8.0
+
+	# Eski label gizle
+	hedef_panel.get_node("MarginContainer/Label").visible = false
+
+	# Container oluştur ya da temizle
+	var mc = hedef_panel.get_node("MarginContainer")
+	var container = mc.get_node_or_null("HedefContainer")
+	if container:
+		for c in container.get_children():
+			c.queue_free()
+	else:
+		container = VBoxContainer.new()
+		container.name = "HedefContainer"
+		container.layout_mode = 2
+		container.add_theme_constant_override("separation", 6)
+		mc.add_child(container)
+
+	for i in range(hedef_listesi.size()):
+		var satir = VBoxContainer.new()
+		satir.add_theme_constant_override("separation", 2)
+		container.add_child(satir)
+
+		# İsim label
+		var isim_lbl = Label.new()
+		isim_lbl.name = "IsimLabel"
+		var ok = "> " if i == secili_index else "  "
+		isim_lbl.text = ok + hedef_listesi[i]
+		isim_lbl.add_theme_font_size_override("font_size", 10)
+		satir.add_child(isim_lbl)
+
+		# HP bar container (Control, sabit boyutlu)
+		var hp_bg = ColorRect.new()
+		hp_bg.name = "HPBg"
+		hp_bg.color = Color(0.6, 0.0, 0.0, 1.0)
+		hp_bg.custom_minimum_size = Vector2(BAR_GENISLIK, BAR_YUKSEKLIK)
+		satir.add_child(hp_bg)
+
+		# Yeşil ön bar — anchor ile parent'a oransal
+		var hp_fg = ColorRect.new()
+		hp_fg.name = "HPFg"
+		hp_fg.color = Color(0.0, 0.8, 0.0, 1.0)
+		hp_fg.layout_mode = 1
+		hp_fg.anchor_left = 0.0
+		hp_fg.anchor_top = 0.0
+		hp_fg.anchor_bottom = 1.0
+		var d = _hedef_dusmanlar[i] if i < _hedef_dusmanlar.size() else null
+		var oran = 1.0
+		if d:
+			oran = clampf(float(d.current_hp) / float(d.max_hp), 0.0, 1.0)
+		hp_fg.anchor_right = oran
+		hp_fg.offset_right = 0.0
+		hp_fg.offset_bottom = 0.0
+		hp_bg.add_child(hp_fg)
+
+	# Panel boyutunu ayarla
+	hedef_panel.offset_right = hedef_panel.offset_left + BAR_GENISLIK + 48
+	hedef_panel.offset_bottom = hedef_panel.offset_top + hedef_listesi.size() * 36 + 24
+
 
 # --- ACT MENÜ ---
 func act_menu_kontrol():
@@ -160,6 +233,8 @@ func act_menu_kontrol():
 		act_panel.visible = false
 		ana_menu_panel.visible = true
 		menu_tipi = "ANA"
+		secili_index = _ana_menu_index
+		ana_menu_guncelle()
 
 func act_menu_guncelle():
 	var text = "Act:\n"
@@ -192,6 +267,7 @@ func _stat_yaz(ki: int, node_isim: String):
 
 # --- HEDEF / ACT ---
 func hedef_secim_goster(dusmanlar: Array):
+	_ana_menu_index = secili_index
 	ana_menu_panel.visible = false
 	hedef_panel.visible = true
 	menu_tipi = "HEDEF"
@@ -205,6 +281,7 @@ func hedef_secim_goster(dusmanlar: Array):
 			_hedef_dusmanlar.append(dusmanlar[i]["data"])
 			idx_map.append(i)
 	set_meta("hedef_index_map", idx_map)
+	_hedef_satirlari_olustur()
 	hedef_menu_guncelle()
 
 func _on_hedef_secildi(index: int):
@@ -242,19 +319,79 @@ func sihir_menusu_ac(secenekler: Array, sihirler: Dictionary, karakter_isim: Str
 	_sihir_verileri = sihirler
 	_sihir_karakter = karakter_isim
 	_sihir_battle_manager = bm
+	_ana_menu_index = secili_index
 	secili_index = 0
 	menu_tipi = "SIHIR"
 	ana_menu_panel.visible = false
 	act_panel.visible = true
 	act_panel.get_node("MarginContainer/Label").text = _sihir_metni_olustur()
+	_sihir_panel_yeniden_boyutlandir()
+	if not act_panel.get_node_or_null("QutLabel"):
+		var qut_lbl = Label.new()
+		qut_lbl.name = "QutLabel"
+		qut_lbl.add_theme_font_size_override("font_size", 9)
+		qut_lbl.add_theme_color_override("font_color", Color(0.8, 0.8, 0.2, 1.0))
+		qut_lbl.layout_mode = 1
+		qut_lbl.anchor_left = 0.0
+		qut_lbl.anchor_top = 0.0
+		qut_lbl.anchor_right = 1.0
+		qut_lbl.anchor_bottom = 0.0
+		qut_lbl.offset_top = 6
+		qut_lbl.offset_bottom = 20
+		qut_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		act_panel.add_child(qut_lbl)
+	_sihir_qut_label_guncelle()
 
 func _sihir_metni_olustur() -> String:
-	var text = "Sihir:\n"
-	for i in range(_sihir_secenekler.size()):
-		text += ("> " if i == secili_index else "  ") + _sihir_secenekler[i] + "\n"
+	var sqa_listesi = _sihir_verileri.get("SQA", [])
+	var dqa_listesi = _sihir_verileri.get("DQA", [])
+	var text = "Sihir\n"
+
+	text += "-- SQA --\n"
+	for i in range(sqa_listesi.size()):
+		var ok = "> " if i == secili_index else "  "
+		text += ok + sqa_listesi[i]["isim"] + "\n"
+	if sqa_listesi.is_empty():
+		text += "  (Yok)\n"
+
+	text += "-- DQA --\n"
+	for i in range(dqa_listesi.size()):
+		var global_i = sqa_listesi.size() + i
+		var ok = "> " if global_i == secili_index else "  "
+		text += ok + dqa_listesi[i]["isim"] + "\n"
+	if dqa_listesi.is_empty():
+		text += "  (Yok)\n"
+
 	return text
 
+func _secili_sihir_qut() -> String:
+	var sqa_listesi = _sihir_verileri.get("SQA", [])
+	var dqa_listesi = _sihir_verileri.get("DQA", [])
+	if secili_index < sqa_listesi.size():
+		return str(sqa_listesi[secili_index].get("qut", 0)) + " QUT"
+	var dqa_i = secili_index - sqa_listesi.size()
+	if dqa_i < dqa_listesi.size():
+		return str(dqa_listesi[dqa_i].get("qut_her", 0)) + "x2 QUT"
+	return ""
+
+func _sihir_qut_label_guncelle():
+	var qut_label = act_panel.get_node_or_null("QutLabel")
+	if qut_label:
+		qut_label.text = _secili_sihir_qut()
+
+func _sihir_panel_yeniden_boyutlandir():
+	var label = act_panel.get_node("MarginContainer/Label")
+	var margin = 16  # margin_left + margin_right (8+8)
+	var label_min = label.get_minimum_size()
+	var yeni_genislik = label_min.x + margin + 16
+	var yeni_yukseklik = label_min.y + margin + 16
+	act_panel.offset_right = act_panel.offset_left + max(yeni_genislik, 170)
+	act_panel.offset_top = act_panel.offset_bottom - yeni_yukseklik
+
 func sihir_paneli_kapat():
+	var qut_label = act_panel.get_node_or_null("QutLabel")
+	if qut_label:
+		qut_label.visible = false
 	act_panel.visible = false
 	menu_tipi = ""
 
@@ -307,20 +444,28 @@ func _parti_hedef_kontrol():
 		hedef_panel.visible = false
 		ana_menu_panel.visible = true
 		menu_tipi = "ANA"
+		secili_index = _ana_menu_index
+		ana_menu_guncelle()
 
 func _sihir_menu_kontrol():
 	if Input.is_action_just_pressed("ui_up"):
 		secili_index = (secili_index - 1 + _sihir_secenekler.size()) % _sihir_secenekler.size()
 		act_panel.get_node("MarginContainer/Label").text = _sihir_metni_olustur()
+		_sihir_panel_yeniden_boyutlandir()
+		_sihir_qut_label_guncelle()
 	if Input.is_action_just_pressed("ui_down"):
 		secili_index = (secili_index + 1) % _sihir_secenekler.size()
 		act_panel.get_node("MarginContainer/Label").text = _sihir_metni_olustur()
+		_sihir_panel_yeniden_boyutlandir()
+		_sihir_qut_label_guncelle()
 	if Input.is_action_just_pressed("tus_z"):
 		_sihir_sec()
 	if Input.is_action_just_pressed("tus_x"):
 		sihir_paneli_kapat()
 		ana_menu_panel.visible = true
 		menu_tipi = "ANA"
+		secili_index = _ana_menu_index
+		ana_menu_guncelle()
 
 func _sihir_sec():
 	# Hangi sihir seçildi bul
@@ -352,6 +497,7 @@ func item_menusu_ac(liste: Array, bm):
 	_item_listesi_ui = liste
 	_item_battle_manager = bm
 	_sihir_battle_manager = bm
+	_ana_menu_index = secili_index
 	secili_index = 0
 	menu_tipi = "ITEM"
 	ana_menu_panel.visible = false
@@ -359,23 +505,64 @@ func item_menusu_ac(liste: Array, bm):
 	_item_metni_guncelle()
 
 func _item_metni_guncelle():
+	var SATIR = 7  # Her sütunda max eşya
+	var sol_size = min(SATIR, _item_listesi_ui.size())
+	var sag_size = max(0, _item_listesi_ui.size() - SATIR)
+
 	var text = "Item:\n"
-	for i in range(_item_listesi_ui.size()):
-		var esya = _item_listesi_ui[i]["esya"]
-		var ok = "> " if i == secili_index else "  "
-		text += ok + esya.isim + "\n"
-	act_panel.get_node("MarginContainer/Label").text = text
+	for i in range(max(sol_size, sag_size)):
+		# Sol sütun
+		var sol = ""
+		if i < sol_size:
+			var esya = _item_listesi_ui[i]["esya"]
+			var ok = "> " if i == secili_index else "  "
+			sol = ok + esya.isim
+		# Sağ sütun
+		var sag = ""
+		if i < sag_size:
+			var sag_i = SATIR + i
+			var esya = _item_listesi_ui[sag_i]["esya"]
+			var ok = "> " if sag_i == secili_index else "  "
+			sag = ok + esya.isim
+		# Satırı birleştir (sol 18 karakter sabit genişlik)
+		text += sol.rpad(22) + sag + "\n"
+	var label = act_panel.get_node("MarginContainer/Label")
+	label.text = text
+	# İçeriğe göre panel genişliğini ayarla
+	await get_tree().process_frame
+	var min_size = label.get_minimum_size()
+	act_panel.offset_right = act_panel.offset_left + min_size.x + 20
+	act_panel.offset_bottom = act_panel.offset_top + min_size.y + 20
 
 func item_paneli_kapat():
 	act_panel.visible = false
 	menu_tipi = ""
 
 func _item_menu_kontrol():
+	var SATIR = 7
+	var toplam = _item_listesi_ui.size()
+	var sutun = 0 if secili_index < SATIR else 1
+	var sutun_baslangic = sutun * SATIR
+	var sutun_bitis = min(sutun_baslangic + SATIR, toplam)
+	var sutun_boyut = sutun_bitis - sutun_baslangic
+
 	if Input.is_action_just_pressed("ui_up"):
-		secili_index = (secili_index - 1 + _item_listesi_ui.size()) % _item_listesi_ui.size()
+		var sutun_i = secili_index - sutun_baslangic
+		secili_index = sutun_baslangic + (sutun_i - 1 + sutun_boyut) % sutun_boyut
 		_item_metni_guncelle()
 	if Input.is_action_just_pressed("ui_down"):
-		secili_index = (secili_index + 1) % _item_listesi_ui.size()
+		var sutun_i = secili_index - sutun_baslangic
+		secili_index = sutun_baslangic + (sutun_i + 1) % sutun_boyut
+		_item_metni_guncelle()
+	if Input.is_action_just_pressed("ui_left") and toplam > SATIR:
+		var sutun_i = secili_index % SATIR
+		secili_index = sutun_i  # Sol sütuna geç
+		_item_metni_guncelle()
+	if Input.is_action_just_pressed("ui_right") and toplam > SATIR:
+		var sutun_i = secili_index % SATIR
+		var hedef = SATIR + sutun_i
+		if hedef < toplam:
+			secili_index = hedef  # Sağ sütuna geç
 		_item_metni_guncelle()
 	if Input.is_action_just_pressed("tus_z"):
 		item_paneli_kapat()
@@ -385,3 +572,5 @@ func _item_menu_kontrol():
 		item_paneli_kapat()
 		ana_menu_panel.visible = true
 		menu_tipi = "ANA"
+		secili_index = _ana_menu_index
+		ana_menu_guncelle()

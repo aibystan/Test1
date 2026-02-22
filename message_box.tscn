@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cblq18c672y23"]
 
 [ext_resource type="Script" uid="uid://clmnjrv4wyru5" path="res://message_box.gd" id="1"]
+[ext_resource type="FontFile" uid="uid://bjg66yxtkti5v" path="res://Fonts/card-master.otf" id="2_xf4lt"]
 
 [node name="MessageBox" type="Panel" unique_id=832718018]
 offset_left = 8.0
@@ -25,5 +26,6 @@ theme_override_constants/margin_bottom = 2
 
 [node name="MesajLabel" type="Label" parent="MarginContainer" unique_id=788972191]
 layout_mode = 2
-theme_override_font_sizes/font_size = 10
+theme_override_fonts/font = ExtResource("2_xf4lt")
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 3

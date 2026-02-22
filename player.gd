@@ -5,6 +5,7 @@ const SPEED = 150.0
 @onready var etkilesim_isini = $RayCast2D
 var etkilesim_yasakli = false
 var son_etkilesim_zamani = 0.0
+var _diyalog_kutusu: Node = null  # _ready'de bir kez cache'lenir
 
 func _ready():
 	# Pozisyon ayarlamaları
@@ -20,14 +21,13 @@ func _ready():
 		Global.yuklenen_pozisyon = null
 		print("Player pozisyonu battle'dan yüklendi: ", global_position)
 
-	# Diyalog kapanınca kilidi sıfırla
+	# DiyalogKutusu'nu bir kez bul ve cache'le
 	await get_tree().process_frame
-	var diyalog_kutusu = get_tree().current_scene.find_child("DiyalogKutusu")
-	if diyalog_kutusu:
-		diyalog_kutusu.diyalog_bitti.connect(_diyalog_kapandi)
+	_diyalog_kutusu = get_tree().current_scene.find_child("DiyalogKutusu")
+	if _diyalog_kutusu:
+		_diyalog_kutusu.diyalog_bitti.connect(_diyalog_kapandi)
 
 func _diyalog_kapandi():
-	# Diyalog kapandığı anda timer'ı sıfırla — Z basılı olsa bile 500ms geçmeden etkileşim olmaz
 	son_etkilesim_zamani = Time.get_ticks_msec()
 	etkilesim_yasakli = true
 
@@ -40,8 +40,7 @@ func _physics_process(_delta):
 		return
 
 	# --- DİYALOG KİLİT YÖNETİMİ ---
-	var diyalog_kutusu = get_tree().current_scene.find_child("DiyalogKutusu")
-	var diyalog_acik = diyalog_kutusu and diyalog_kutusu.visible
+	var diyalog_acik = _diyalog_kutusu and _diyalog_kutusu.visible
 
 	if diyalog_acik:
 		etkilesim_yasakli = true
@@ -51,7 +50,6 @@ func _physics_process(_delta):
 		move_and_slide()
 		return
 	else:
-		# Diyalog kapalı - son etkileşimden 500ms geçtiyse kilidi aç
 		if Time.get_ticks_msec() - son_etkilesim_zamani > 500:
 			etkilesim_yasakli = false
 
