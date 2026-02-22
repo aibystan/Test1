@@ -1,104 +1,11 @@
 [gd_scene format=3 uid="uid://bg0o4u0nfu6i0"]
 
 [ext_resource type="Script" uid="uid://cx7irsonxi6h5" path="res://battle_ui.gd" id="1"]
-[ext_resource type="PackedScene" uid="uid://cblq18c672y23" path="res://message_box.tscn" id="2"]
-[ext_resource type="Shader" path="res://panel_blur.gdshader" id="3"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_blur"]
-shader = ExtResource("3")
-shader_parameter/blur_amount = 3.0
-shader_parameter/tint_color = Color(0, 0, 0, 0.45)
-
+[ext_resource type="FontFile" uid="uid://bjg66yxtkti5v" path="res://Fonts/card-master.otf" id="2_ilr4f"]
 
 [node name="BattleUI" type="CanvasLayer" unique_id=864144045]
+layer = 11
 script = ExtResource("1")
-
-[node name="BlurRect" type="ColorRect" parent="." unique_id=999000001]
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-material = SubResource("ShaderMaterial_blur")
-
-[node name="StatsPanel" type="Panel" parent="." unique_id=895395506]
-offset_top = 450.0
-offset_right = 200.0
-offset_bottom = 540.0
-
-[node name="MarginContainer" type="MarginContainer" parent="StatsPanel" unique_id=1425259440]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 3
-theme_override_constants/margin_top = 2
-theme_override_constants/margin_right = 3
-theme_override_constants/margin_bottom = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="StatsPanel/MarginContainer" unique_id=1862768513]
-layout_mode = 2
-theme_override_constants/separation = 2
-
-[node name="Karakter1" type="VBoxContainer" parent="StatsPanel/MarginContainer/HBoxContainer" unique_id=1439373648]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="IsimLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter1" unique_id=232383939]
-layout_mode = 2
-theme_override_font_sizes/font_size = 7
-text = "Ryu"
-horizontal_alignment = 1
-
-[node name="HPLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter1" unique_id=1170298429]
-layout_mode = 2
-theme_override_font_sizes/font_size = 7
-text = "HP 100/100"
-
-[node name="QutLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter1" unique_id=331043800]
-layout_mode = 2
-theme_override_font_sizes/font_size = 7
-text = "QUT 200"
-
-[node name="GPLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter1" unique_id=534251106]
-layout_mode = 2
-theme_override_font_sizes/font_size = 7
-text = "GP 0%"
-
-[node name="Karakter2" type="VBoxContainer" parent="StatsPanel/MarginContainer/HBoxContainer" unique_id=1825090912]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="IsimLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter2" unique_id=362664286]
-layout_mode = 2
-theme_override_font_sizes/font_size = 7
-text = "Nina"
-horizontal_alignment = 1
-
-[node name="HPLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter2" unique_id=323031097]
-layout_mode = 2
-theme_override_font_sizes/font_size = 7
-text = "HP 70/70"
-
-[node name="QutLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter2" unique_id=1148845685]
-layout_mode = 2
-theme_override_font_sizes/font_size = 7
-text = "QUT 0"
-
-[node name="GPLabel" type="Label" parent="StatsPanel/MarginContainer/HBoxContainer/Karakter2" unique_id=945786632]
-layout_mode = 2
-theme_override_font_sizes/font_size = 7
-text = "GP 0%"
-
-[node name="MessageBox" parent="." unique_id=832718018 instance=ExtResource("2")]
-offset_left = 14.0
-offset_top = 12.0
-offset_right = 638.0
-offset_bottom = 48.0
 
 [node name="AnaMenuPanel" type="Panel" parent="." unique_id=1001219172]
 visible = false
@@ -126,31 +33,36 @@ theme_override_constants/separation = 5
 [node name="SaldirBtn" type="Button" parent="AnaMenuPanel/MarginContainer/HBoxContainer" unique_id=36114406]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 10
+theme_override_fonts/font = ExtResource("2_ilr4f")
+theme_override_font_sizes/font_size = 16
 text = "Saldır"
 
 [node name="SihirBtn" type="Button" parent="AnaMenuPanel/MarginContainer/HBoxContainer" unique_id=1263174437]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 10
+theme_override_fonts/font = ExtResource("2_ilr4f")
+theme_override_font_sizes/font_size = 16
 text = "Sihir"
 
 [node name="EylemBtn" type="Button" parent="AnaMenuPanel/MarginContainer/HBoxContainer" unique_id=219072796]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 10
+theme_override_fonts/font = ExtResource("2_ilr4f")
+theme_override_font_sizes/font_size = 16
 text = "Eylem"
 
 [node name="ItemBtn" type="Button" parent="AnaMenuPanel/MarginContainer/HBoxContainer" unique_id=282413704]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 10
+theme_override_fonts/font = ExtResource("2_ilr4f")
+theme_override_font_sizes/font_size = 16
 text = "İtem"
 
 [node name="InsafBtn" type="Button" parent="AnaMenuPanel/MarginContainer/HBoxContainer" unique_id=1343622410]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 10
+theme_override_fonts/font = ExtResource("2_ilr4f")
+theme_override_font_sizes/font_size = 16
 text = "İnsaf"
 
 [node name="HedefPanel" type="Panel" parent="." unique_id=196935677]
@@ -174,7 +86,8 @@ theme_override_constants/margin_bottom = 8
 
 [node name="Label" type="Label" parent="HedefPanel/MarginContainer" unique_id=1763771739]
 layout_mode = 2
-theme_override_font_sizes/font_size = 10
+theme_override_fonts/font = ExtResource("2_ilr4f")
+theme_override_font_sizes/font_size = 16
 text = "Hedef:"
 
 [node name="ActPanel" type="Panel" parent="." unique_id=301048595]
@@ -199,6 +112,6 @@ theme_override_constants/margin_bottom = 8
 [node name="Label" type="Label" parent="ActPanel/MarginContainer" unique_id=1894403749]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_font_sizes/font_size = 10
-vertical_alignment = 0
+theme_override_fonts/font = ExtResource("2_ilr4f")
+theme_override_font_sizes/font_size = 16
 text = "Act:"

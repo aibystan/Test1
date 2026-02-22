@@ -13,9 +13,10 @@ func _ready():
 	battle_manager.grid_node = grid_node
 	battle_manager.player_node = player_node
 	
-	# MessageBox'ı battle_ui içinden al
-	if battle_ui.has_node("MessageBox"):
-		battle_manager.message_box = battle_ui.get_node("MessageBox")
+	# MessageBox'ı UIArkaplan'dan al
+	var ui_arkaplan = get_node_or_null("UIArkaplan")
+	if ui_arkaplan and ui_arkaplan.has_node("MessageBox"):
+		battle_manager.message_box = ui_arkaplan.get_node("MessageBox")
 	
 	battle_ui.battle_manager = battle_manager
 	

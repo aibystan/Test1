@@ -1,11 +1,12 @@
 extends CanvasLayer
 
-@onready var message_box = $MessageBox
-@onready var stats_panel = $StatsPanel
+var message_box: Node = null
+var stats_panel: Node = null
 @onready var ana_menu_panel = $AnaMenuPanel
 @onready var hedef_panel = $HedefPanel
 @onready var act_panel = $ActPanel
-@onready var blur_rect = $BlurRect
+var blur_rect: Node = null
+var _blur_canvas: Node = null
 
 var battle_manager: BattleManager
 var menu_tipi: String = "ANA"
@@ -31,9 +32,45 @@ var _gizle_signal_verildi: bool = false
 
 signal _gizleme_bitti
 
+
+var _blur_tween: Tween = null
+
+func _blur_goster():
+	if not blur_rect or not blur_rect.material:
+		return
+	# Zaten tamamen açıksa tekrar tween etme (flash önleme)
+	if _blur_canvas.visible and blur_rect.material.get_shader_parameter("overall_alpha") >= 1.0:
+		return
+	if _blur_tween:
+		_blur_tween.kill()
+	blur_rect.material.set_shader_parameter("overall_alpha", 0.0)
+	_blur_canvas.visible = true
+	_blur_tween = create_tween()
+	_blur_tween.tween_method(func(v: float): blur_rect.material.set_shader_parameter("overall_alpha", v), 0.0, 1.0, 0.25)
+
+func _blur_gizle():
+	if not blur_rect or not blur_rect.material:
+		return
+	if _blur_tween:
+		_blur_tween.kill()
+	_blur_tween = create_tween()
+	_blur_tween.tween_method(func(v: float): blur_rect.material.set_shader_parameter("overall_alpha", v), 1.0, 0.0, 0.2)
+	_blur_tween.tween_callback(func(): _blur_canvas.visible = false)
+
 func _ready():
+	await get_tree().process_frame
+	# UIArkaplan'dan stats_panel ve message_box bul
+	var ui_arkaplan = get_parent().get_node_or_null("UIArkaplan")
+	if ui_arkaplan:
+		stats_panel = ui_arkaplan.get_node_or_null("StatsPanel")
+		message_box = ui_arkaplan.get_node_or_null("MessageBox")
 	if message_box:
 		message_box.visible = false
+	# BlurCanvas bul
+	var canvas = get_parent().get_node_or_null("BlurCanvas")
+	if canvas:
+		_blur_canvas = canvas
+		blur_rect = canvas.get_node_or_null("BlurRect")
 	ana_menu_panel.visible = false
 	# 1 frame bekle ki node'lar yerleşsin
 	await get_tree().process_frame
@@ -75,6 +112,7 @@ func panelleri_goster():
 	_menu_hedef_y = float(SH - PH)
 
 func panelleri_gizle():
+	_blur_gizle()
 	if message_box:
 		message_box.visible = false
 	_panelleri_gizle_bekleniyor = true
@@ -83,6 +121,7 @@ func panelleri_gizle():
 	await _gizleme_bitti
 
 func sadece_stat_goster():
+	_blur_gizle()
 	ana_menu_panel.visible = false
 	if message_box:
 		message_box.visible = false
@@ -137,7 +176,7 @@ func hedef_menu_kontrol():
 		menu_tipi = "ANA"
 		secili_index = _ana_menu_index
 		ana_menu_guncelle()
-		blur_rect.visible = false
+		_blur_gizle()
 
 func hedef_menu_guncelle():
 	var container = hedef_panel.get_node_or_null("MarginContainer/HedefContainer")
@@ -237,7 +276,7 @@ func act_menu_kontrol():
 		menu_tipi = "ANA"
 		secili_index = _ana_menu_index
 		ana_menu_guncelle()
-		blur_rect.visible = false
+		_blur_gizle()
 
 func act_menu_guncelle():
 	var text = "Act:\n"
@@ -247,7 +286,7 @@ func act_menu_guncelle():
 
 # --- TURN ---
 func turn_menusu_goster(_k: Dictionary):
-	blur_rect.visible = false
+	_blur_gizle()
 	menu_tipi = "ANA"
 	secili_index = 0
 	stat_guncelle()
@@ -272,7 +311,7 @@ func _stat_yaz(ki: int, node_isim: String):
 # --- HEDEF / ACT ---
 func hedef_secim_goster(dusmanlar: Array):
 	_ana_menu_index = secili_index
-	blur_rect.visible = true
+	_blur_goster()
 	ana_menu_panel.visible = false
 	hedef_panel.visible = true
 	menu_tipi = "HEDEF"
@@ -298,6 +337,7 @@ func _on_hedef_secildi(index: int):
 			battle_manager.hedef_secildi(idx_map[index])
 
 func act_secenekleri_goster(acts: Array):
+	_blur_goster()
 	ana_menu_panel.visible = false
 	act_panel.visible = true
 	menu_tipi = "ACT"
@@ -306,6 +346,7 @@ func act_secenekleri_goster(acts: Array):
 	act_menu_guncelle()
 
 func _on_act_secildi(act_ismi: String):
+	_blur_gizle()
 	act_panel.visible = false
 	menu_tipi = ""
 	if battle_manager: battle_manager.act_secildi(act_ismi, 0)
@@ -321,7 +362,7 @@ var _sihir_secenekler: Array = []
 
 func sihir_menusu_ac(secenekler: Array, sihirler: Dictionary, karakter_isim: String, bm):
 	_sihir_secenekler = secenekler
-	blur_rect.visible = true
+	_blur_goster()
 	_sihir_verileri = sihirler
 	_sihir_karakter = karakter_isim
 	_sihir_battle_manager = bm
@@ -395,7 +436,9 @@ func _sihir_panel_yeniden_boyutlandir():
 	act_panel.offset_right = act_panel.offset_left + max(yeni_genislik, 170)
 	act_panel.offset_top = act_panel.offset_bottom - yeni_yukseklik
 
-func sihir_paneli_kapat():
+func sihir_paneli_kapat(blur_kapat: bool = true):
+	if blur_kapat:
+		_blur_gizle()
 	var qut_label = act_panel.get_node_or_null("QutLabel")
 	if qut_label:
 		qut_label.visible = false
@@ -403,7 +446,7 @@ func sihir_paneli_kapat():
 	menu_tipi = ""
 
 func tum_panelleri_kapat():
-	blur_rect.visible = false
+	_blur_gizle()
 	act_panel.visible = false
 	hedef_panel.visible = false
 	menu_tipi = ""
@@ -454,7 +497,7 @@ func _parti_hedef_kontrol():
 		menu_tipi = "ANA"
 		secili_index = _ana_menu_index
 		ana_menu_guncelle()
-		blur_rect.visible = false
+		_blur_gizle()
 
 func _sihir_menu_kontrol():
 	if Input.is_action_just_pressed("ui_up"):
@@ -475,7 +518,7 @@ func _sihir_menu_kontrol():
 		menu_tipi = "ANA"
 		secili_index = _ana_menu_index
 		ana_menu_guncelle()
-		blur_rect.visible = false
+		_blur_gizle()
 
 func _sihir_sec():
 	# Hangi sihir seçildi bul
@@ -485,14 +528,14 @@ func _sihir_sec():
 
 	if idx < sqa_listesi.size():
 		var sihir = sqa_listesi[idx]
-		sihir_paneli_kapat()
+		sihir_paneli_kapat(false)  # blur açık kalsın, hedef seçimi açacak
 		if _sihir_battle_manager:
 			_sihir_battle_manager.sihir_secildi("SQA", sihir)
 	else:
 		idx -= sqa_listesi.size()
 		if idx < dqa_listesi.size():
 			var sihir = dqa_listesi[idx]
-			sihir_paneli_kapat()
+			sihir_paneli_kapat(false)  # blur açık kalsın, hedef seçimi açacak
 			if _sihir_battle_manager:
 				_sihir_battle_manager.sihir_secildi("DQA", sihir)
 
@@ -505,7 +548,7 @@ var _item_battle_manager = null
 
 func item_menusu_ac(liste: Array, bm):
 	_item_listesi_ui = liste
-	blur_rect.visible = true
+	_blur_goster()
 	_item_battle_manager = bm
 	_sihir_battle_manager = bm
 	_ana_menu_index = secili_index
@@ -546,6 +589,7 @@ func _item_metni_guncelle():
 	act_panel.offset_bottom = act_panel.offset_top + min_size.y + 20
 
 func item_paneli_kapat():
+	_blur_gizle()
 	act_panel.visible = false
 	menu_tipi = ""
 
@@ -585,4 +629,4 @@ func _item_menu_kontrol():
 		menu_tipi = "ANA"
 		secili_index = _ana_menu_index
 		ana_menu_guncelle()
-		blur_rect.visible = false
+		_blur_gizle()

@@ -202,6 +202,8 @@ func hedef_secildi(hedef_index: int):
 		_bekleyen_sihir = {}
 		return
 	if timing_bar:
+		if battle_ui:
+			battle_ui._blur_gizle()
 		timing_bar.baslat()
 		var sonuc = await timing_bar.timing_tamamlandi
 		var carpan = sonuc[1]
@@ -587,7 +589,7 @@ func sihir_secildi(tip: String, sihir: Dictionary):
 		_sonraki_aktif_karaktere_gec()
 		return
 
-	if battle_ui: battle_ui.sihir_paneli_kapat()
+	if battle_ui: battle_ui.sihir_paneli_kapat(false)
 	_bekleyen_sihir = {"tip": tip, "sihir": sihir}
 
 	match sihir["isim"]:
@@ -622,6 +624,7 @@ func sihir_hedef_secildi(hedef_index: int):
 				if dusmanlar[hedef_index]["data"].oldu_mu():
 					dusman_oldu(hedef_index)
 			if battle_ui: battle_ui.stat_guncelle()
+			if battle_ui: battle_ui._blur_gizle()
 			await get_tree().create_timer(1.5).timeout
 			aktif_karakter_index += 1
 			_sonraki_aktif_karaktere_gec()

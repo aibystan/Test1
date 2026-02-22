@@ -3,6 +3,7 @@ shader_type canvas_item;
 uniform sampler2D screen_texture : hint_screen_texture, filter_linear_mipmap;
 uniform float blur_amount : hint_range(0.0, 10.0) = 3.0;
 uniform vec4 tint_color : source_color = vec4(0.0, 0.0, 0.0, 0.4);
+uniform float overall_alpha : hint_range(0.0, 1.0) = 1.0;
 
 void fragment() {
 	vec2 uv = SCREEN_UV;
@@ -23,5 +24,5 @@ void fragment() {
 
 	// Koyulaştırma tonu ekle
 	col.rgb = mix(col.rgb, tint_color.rgb, tint_color.a);
-	COLOR = vec4(col.rgb, 1.0);
+	COLOR = vec4(col.rgb, overall_alpha);
 }
