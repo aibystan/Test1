@@ -48,7 +48,17 @@ func _ready():
 
 func savas_baslat(dusman_listesi: Array):
 	print("Savaş Başladı!")
-	player_characters = Global.party_data
+	
+	# Sadece aktif party üyelerini al
+	if Global.takipci_aktif:
+		# İki karakter birlikte
+		player_characters = Global.party_data.duplicate()
+		print("Savaş: Oyuncu + Takipçi (2 karakter)")
+	else:
+		# Sadece ilk karakter (player)
+		player_characters = [Global.party_data[0]]
+		print("Savaş: Sadece Oyuncu (1 karakter)")
+	
 	hasar_dagilim_index = 0
 
 	if player_node:

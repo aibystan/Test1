@@ -294,8 +294,22 @@ func turn_menusu_goster(_k: Dictionary):
 	panelleri_goster()
 
 func stat_guncelle():
+	# Karakter sayısını battle_manager'dan al
+	var karakter_sayisi = 2
+	if battle_manager and battle_manager.player_characters:
+		karakter_sayisi = battle_manager.player_characters.size()
+	
+	# Karakter 1 (her zaman var)
 	_stat_yaz(0, "Karakter1")
-	_stat_yaz(1, "Karakter2")
+	
+	# Karakter 2 (sadece aktifse göster)
+	var karakter2_node = stats_panel.get_node_or_null("MarginContainer/HBoxContainer/Karakter2")
+	if karakter2_node:
+		if karakter_sayisi > 1:
+			karakter2_node.visible = true
+			_stat_yaz(1, "Karakter2")
+		else:
+			karakter2_node.visible = false
 
 func _stat_yaz(ki: int, node_isim: String):
 	if ki >= Global.party_data.size(): return

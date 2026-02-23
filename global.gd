@@ -6,6 +6,9 @@ var oyun_suresi_saniye: float = 0.0  # Toplam oyun süresi (saniye cinsinden)
 # --- DÜŞMAN TAKİBİ ---
 var defeated_enemies: Dictionary = {}  # Yenilen düşmanlar {id: true}
 
+# --- TAKİPÇİ SİSTEMİ ---
+var takipci_aktif: bool = true  # Takipçi aktif mi?
+
 var max_hp = 100
 var current_hp = 100
 
@@ -276,6 +279,19 @@ func oyun_suresi_string() -> String:
 	var dakika = toplam_saniye / 60
 	var saniye = toplam_saniye % 60
 	return "%d:%02d" % [dakika, saniye]
+
+# --- TAKİPÇİ YÖNETİMİ ---
+func takipci_ac():
+	takipci_aktif = true
+	print("Takipçi aktif edildi")
+
+func takipci_kapat():
+	takipci_aktif = false
+	print("Takipçi devre dışı bırakıldı")
+
+func takipci_toggle():
+	takipci_aktif = not takipci_aktif
+	print("Takipçi durumu: ", "AKTİF" if takipci_aktif else "KAPALI")
 
 # --- EŞYA KULLANIM FONKSİYONLARI ---
 func karakteri_iyilestir(miktar):

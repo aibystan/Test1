@@ -46,8 +46,24 @@ func _ready():
 	else:
 		print("✗ HATA: Takipçi '", hedef_ismi, "' isimli hedefi bulamadı!")
 		print("  Lütfen hedef isminin doğru olduğundan emin ol")
+	
+	# Aktiflik durumunu kontrol et
+	guncelle_gorunurluk()
+
+func guncelle_gorunurluk():
+	# Global flag'e göre görünürlük ve physics'i ayarla
+	if Global.takipci_aktif:
+		visible = true
+		set_physics_process(true)
+	else:
+		visible = false
+		set_physics_process(false)
+		ayak_izleri.clear()
 
 func _physics_process(_delta):
+	# Her frame aktiflik kontrolü
+	if not Global.takipci_aktif:
+		return
 	if hedef == null: 
 		return
 	
@@ -140,4 +156,10 @@ func reset_pozisyon(yeni_pozisyon: Vector2):
 	# Physics'i geçici kapat
 	set_physics_process(false)
 	await get_tree().create_timer(0.5).timeout
-	set_physics_process(true)
+	
+	# Sadece aktifse physics'i aç
+	if Global.takipci_aktif:
+		set_physics_process(true)
+	
+	# Görünürlüğü güncelle
+	guncelle_gorunurluk()

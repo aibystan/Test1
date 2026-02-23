@@ -34,6 +34,11 @@ func _process(_delta):
 func menuyu_ac():
 	visible = true
 	secili_index = 0
+	
+	# Takipçi kapalıysa, seçili karakteri sıfırla
+	if not Global.takipci_aktif:
+		Global.secili_karakter_index = 0
+	
 	menuyu_yeniden_ciz()
 	get_tree().paused = true 
 
@@ -48,12 +53,16 @@ func kontrol_mekanizmasi():
 		menuyu_kapat()
 		return
 
-	# V TUŞU: Karakter Değiştir
+	# V TUŞU: Karakter Değiştir (sadece takipçi aktifse)
 	if Input.is_action_just_pressed("karakter_degistir"):
-		Global.secili_karakter_index += 1
-		if Global.secili_karakter_index >= Global.party_data.size():
-			Global.secili_karakter_index = 0
-		menuyu_yeniden_ciz()
+		if Global.takipci_aktif:
+			Global.secili_karakter_index += 1
+			if Global.secili_karakter_index >= Global.party_data.size():
+				Global.secili_karakter_index = 0
+			menuyu_yeniden_ciz()
+		else:
+			# Takipçi kapalıysa karakter değiştirilemez
+			aciklama_label.text = "Sadece sen varsın!"
 		return
 
 	# --- GRID NAVİGASYONU ---
@@ -186,8 +195,12 @@ func karakter_bilgisini_goster():
 	if karakter["silah"] != null:
 		toplam_atk += karakter["silah"].etki_degeri
 	
-	# Karakter ismine ok işaretleri ekle (V tuşu için görsel ipucu)
-	isim_label.text = "< " + karakter["isim"] + " > (V)"
+	# Karakter ismine ok işaretleri ekle (sadece takipçi aktifse V tuşu ipucu)
+	if Global.takipci_aktif:
+		isim_label.text = "< " + karakter["isim"] + " > (V)"
+	else:
+		isim_label.text = karakter["isim"]
+	
 	hp_label.text = "HP: %d/%d" % [karakter["hp"], karakter["max_hp"]]
 	atk_label.text = "SALDIRI: %d" % toplam_atk 
 	

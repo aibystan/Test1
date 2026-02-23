@@ -31,6 +31,12 @@ func _diyalog_kapandi():
 	son_etkilesim_zamani = Time.get_ticks_msec()
 	etkilesim_yasakli = true
 
+func _input(event):
+	# TEST: T tuşu ile takipçi toggle
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_T:
+			Global.takipci_toggle()
+
 func _physics_process(_delta):
 	# --- SAHNE GEÇİŞİ KONTROLÜ ---
 	if Gecis.gecis_yapiliyor:
