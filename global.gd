@@ -6,7 +6,11 @@ var oyun_suresi_saniye: float = 0.0  # Toplam oyun süresi (saniye cinsinden)
 # --- DÜŞMAN TAKİBİ ---
 var defeated_enemies: Dictionary = {}  # Yenilen düşmanlar {id: true}
 
+# --- DÜŞMAN POZİSYON KAYDI ---
+var enemy_positions: Dictionary = {}  # {node_path: Vector2}
+
 # --- TAKİPÇİ SİSTEMİ ---
+signal takipci_durumu_degisti(aktif: bool)
 var takipci_aktif: bool = true  # Takipçi aktif mi?
 
 var max_hp = 100
@@ -288,14 +292,17 @@ func oyun_suresi_string() -> String:
 # --- TAKİPÇİ YÖNETİMİ ---
 func takipci_ac():
 	takipci_aktif = true
+	takipci_durumu_degisti.emit(true)
 	print("Takipçi aktif edildi")
 
 func takipci_kapat():
 	takipci_aktif = false
+	takipci_durumu_degisti.emit(false)
 	print("Takipçi devre dışı bırakıldı")
 
 func takipci_toggle():
 	takipci_aktif = not takipci_aktif
+	takipci_durumu_degisti.emit(takipci_aktif)
 	print("Takipçi durumu: ", "AKTİF" if takipci_aktif else "KAPALI")
 
 # --- EŞYA KULLANIM FONKSİYONLARI ---

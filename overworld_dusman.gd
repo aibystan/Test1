@@ -14,8 +14,8 @@ var player: CharacterBody2D = null
 var takip_ediyor = false
 var mevcut_hiz = 0.0
 var savaş_basladi = false
-var yenildi = false  # Düşman yenildi mi?
-var unique_id: String = ""  # Her düşman için benzersiz ID
+var yenildi = false
+var unique_id: String = ""
 
 @onready var sprite = $Sprite2D
 @onready var gorme_alani = $GormeAlani
@@ -24,18 +24,20 @@ var unique_id: String = ""  # Her düşman için benzersiz ID
 func _ready():
 	mevcut_hiz = baslangic_hizi
 	
-	# Benzersiz ID oluştur (pozisyon bazlı)
-	unique_id = str(int(global_position.x)) + "_" + str(int(global_position.y))
-	print("Düşman ID: ", unique_id)
+	# Node ismini ID olarak kullan (sahnede her node ismi benzersizdir)
+	unique_id = name
+	
+	# Kaydedilmiş pozisyon varsa uygula
+	if Global.enemy_positions.has(unique_id):
+		await get_tree().process_frame
+		global_position = Global.enemy_positions[unique_id]
+		Global.enemy_positions.erase(unique_id)
 	
 	# Bu düşman öldürüldü mü kontrol et
 	if Global.defeated_enemies.has(unique_id):
-		print("Bu düşman daha önce yenilmiş! Animasyon oynatılıyor...")
 		yenildi = true
 		await kaybol_animasyonu()
 		return
-	else:
-		print("Düşman ilk kez karşılaşılıyor, normal davranış.")
 	
 	# Görme alanı boyutunu ayarla
 	if gorme_alani and gorme_alani.has_node("CollisionShape2D"):
@@ -90,39 +92,30 @@ func savas_basla():
 	velocity = Vector2.ZERO
 	
 	if dusman_listesi.size() > 0:
-		print("=== SAVAŞ BAŞLIYOR ===")
-		print("Düşman ID kaydediliyor: ", unique_id)
-		
-		# Mevcut sahneyi ve pozisyonu kaydet
+		# Mevcut sahneyi ve oyuncu pozisyonunu kaydet
 		Global.set_meta("battle_return_scene", get_tree().current_scene.scene_file_path)
-		
 		if player:
 			Global.set_meta("battle_return_position", player.global_position)
 		
-		# Düşman ID'sini kaydet
+		# Düşman ID ve mevcut pozisyonunu kaydet
 		Global.set_meta("current_enemy_id", unique_id)
-		print("Kaydedilen ID: ", Global.get_meta("current_enemy_id"))
+		Global.enemy_positions[unique_id] = global_position
 		
 		# Düşman listesini kaydet
 		Global.set_meta("battle_enemies", dusman_listesi)
 		
-		# Savaş sahnesine geç
 		await get_tree().create_timer(0.3).timeout
 		get_tree().change_scene_to_file("res://savas_sahnesi.tscn")
 	else:
 		print("HATA: Düşman listesi boş!")
 		savaş_basladi = false
 
-# Savaş kazanıldığında çağrılacak (Victory screen'den)
 func kaybol_animasyonu():
-	# Flaş animasyonu
-	for i in range(6):  # 6 kez yanıp sön
+	for i in range(6):
 		visible = false
 		await get_tree().create_timer(0.1).timeout
 		visible = true
 		await get_tree().create_timer(0.1).timeout
-	
-	# Son kez kaybol
 	visible = false
 	yenildi = true
 	set_physics_process(false)

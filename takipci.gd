@@ -49,6 +49,9 @@ func _ready():
 	
 	# Aktiflik durumunu kontrol et
 	guncelle_gorunurluk()
+	
+	# Global sinyaline bağlan
+	Global.takipci_durumu_degisti.connect(_on_takipci_durumu_degisti)
 
 func guncelle_gorunurluk():
 	# Global flag'e göre görünürlük ve physics'i ayarla
@@ -61,9 +64,6 @@ func guncelle_gorunurluk():
 		ayak_izleri.clear()
 
 func _physics_process(_delta):
-	# Her frame aktiflik kontrolü
-	if not Global.takipci_aktif:
-		return
 	if hedef == null: 
 		return
 	
@@ -144,6 +144,15 @@ func animasyon_oynat(yon):
 	if yeni_animasyon != son_animasyon:
 		anim_sprite.play(yeni_animasyon)
 		son_animasyon = yeni_animasyon
+
+func _on_takipci_durumu_degisti(aktif: bool):
+	if aktif:
+		# Oyuncunun yanında yeniden belir
+		if hedef:
+			ayak_izleri.clear()
+			global_position = hedef.global_position
+			velocity = Vector2.ZERO
+	guncelle_gorunurluk()
 
 func reset_pozisyon(yeni_pozisyon: Vector2):
 	ayak_izleri.clear()
