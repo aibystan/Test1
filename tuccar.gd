@@ -1,6 +1,13 @@
 extends StaticBody2D
 
+@export var npc_ismi: String = "Merchant"
+@export_multiline var mesajlar: Array[String] = [
+	"This is a test dialogue.",
+	"Elimde cok taze mallar var.",
+	"Bir bakmak ister misin?"
+]
 @export var satilacak_urunler: Array[ItemData] = []
+
 var oyuncu_yakin = false
 var etkilesim_yasakli = false
 
@@ -19,12 +26,7 @@ func _process(_delta):
 	# Z tuşu - sadece diyalog kapalıyken
 	if oyuncu_yakin and Input.is_action_just_pressed("tus_z") and not etkilesim_yasakli:
 		if diyalog_kutusu:
-			var soyleyeceklerim = [
-				"This is a test dialogue.\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-				"Elimde cok taze mallar var.",
-				"Bir bakmak ister misin?"
-			]
-			diyalog_kutusu.baslat("Merchant", soyleyeceklerim, self.dukkan_ac)
+			diyalog_kutusu.baslat(npc_ismi, mesajlar, self.dukkan_ac)
 			etkilesim_yasakli = true
 
 # Bu fonksiyon, konuşma bitince Diyalog Kutusu tarafından çağırılacak

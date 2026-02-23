@@ -1,7 +1,7 @@
 extends StaticBody2D
 
-@export var isim: String = "Old Sign"
-@export var giris_mesajlari: Array[String] = ["Ne yapmak istersin?"]
+@export var npc_veya_obje_ismi: String = "Old Sign"
+@export_multiline var giris_mesajlari: Array[String] = ["Ne yapmak istersin?"]
 @export var secenekler: Array[DialogSecenek] = []
 
 func etkilesime_gec():
@@ -12,11 +12,11 @@ func etkilesime_gec():
 
 	# Seçenek yoksa sadece diyalog göster
 	if secenekler.is_empty():
-		diyalog.baslat(isim, giris_mesajlari)
+		diyalog.baslat(npc_veya_obje_ismi, giris_mesajlari)
 		return
 
 	# Seçenek varsa giriş mesajından sonra seçenekleri aç
-	diyalog.baslat(isim, giris_mesajlari, _secenekleri_goster.bind(diyalog))
+	diyalog.baslat(npc_veya_obje_ismi, giris_mesajlari, _secenekleri_goster.bind(diyalog))
 
 func _secenekleri_goster(diyalog):
 	var secenek_listesi = []
@@ -24,6 +24,6 @@ func _secenekleri_goster(diyalog):
 		var mesajlar = s.cevap_mesajlari.duplicate()
 		secenek_listesi.append({
 			"metin": s.secenek_metni,
-			"callback": func(): diyalog.baslat(isim, mesajlar)
+			"callback": func(): diyalog.baslat(npc_veya_obje_ismi, mesajlar)
 		})
 	diyalog.secenekleri_goster(secenek_listesi)
