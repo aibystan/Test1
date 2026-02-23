@@ -36,6 +36,11 @@ func _input(event):
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_T:
 			Global.takipci_toggle()
+		
+		# TEST: L tuşu ile kayıt yükleme (Slot 1)
+		if event.keycode == KEY_L:
+			print("=== L TUŞU: KAYIT YÜKLEME (Slot 1) ===")
+			Global.oyunu_yukle(1)
 
 func _physics_process(_delta):
 	# --- SAHNE GEÇİŞİ KONTROLÜ ---

@@ -143,7 +143,8 @@ func oyunu_kaydet(oyuncu_pozisyonu: Vector2, sahne_yolu: String, slot: int = 1):
 		"party": party_kaydi,
 		"secili_karakter": secili_karakter_index,
 		"kayit_zamani": Time.get_datetime_string_from_system(),
-		"oyun_suresi": oyun_suresi_saniye  # Oyun süresi eklendi
+		"oyun_suresi": oyun_suresi_saniye,
+		"takipci_aktif": takipci_aktif  # Takipçi durumu
 	}
 	
 	# Slot'a göre dosya seç
@@ -222,6 +223,10 @@ func oyunu_yukle(slot: int = 1):
 		
 		# Oyun süresi yükle
 		oyun_suresi_saniye = veriler.get("oyun_suresi", 0.0)
+		
+		# Takipçi durumu yükle
+		takipci_aktif = veriler.get("takipci_aktif", true)
+		print("Kayıt yüklendi - Takipçi durumu: ", "AKTİF" if takipci_aktif else "KAPALI")
 		
 		# Envanter yükle
 		inventory.clear()
