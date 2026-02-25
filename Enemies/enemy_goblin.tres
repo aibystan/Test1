@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://bsbmppp836l8k"]
 
-[ext_resource type="Script" path="res://EnemyData.gd" id="1"]
+[ext_resource type="Script" uid="uid://dve6gouuhfn6h" path="res://EnemyData.gd" id="1"]
+[ext_resource type="SpriteFrames" uid="uid://c34o686fb76yw" path="res://Sprite Frames/goblin_frames.tres" id="2_us1xc"]
 
 [resource]
 script = ExtResource("1")
@@ -11,11 +12,12 @@ atk = 8
 def = 4
 renk = Color(0.8, 0.4, 0, 1)
 boyut = Vector2(80, 80)
+sprite_frames = ExtResource("2_us1xc")
 acts = Array[String](["Check", "Tehdit Et", "Teklif Ver"])
 baris_kosullari = Array[String](["Teklif Ver", "Teklif Ver"])
 check_mesaji = "GOBLIN - HP 45 ATK 8 DEF 4
 Saldırgan bir yaratık. Pazarlık sever."
 flavor_texts = Array[String](["Goblin sırıtıyor...", "Goblin kibirle kaslarını gösteriyor.", "Goblin para sayıyor.", "Goblin seni hafife alıyor."])
+diyaloglar = Array[String](["Heh heh heh...", "Para mı? Hayır...|İnsan mı? Evet!", "Geri çekil yoksa..."])
 pattern_turu = "orta"
 saldiri_gecikmesi = 1.8
-diyaloglar = Array[String](["Heh heh heh...", "Para mı? Hayır...|İnsan mı? Evet!", "Geri çekil yoksa..."])

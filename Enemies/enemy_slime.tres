@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://ccahubxfs61df"]
 
-[ext_resource type="Script" path="res://EnemyData.gd" id="1"]
+[ext_resource type="Script" uid="uid://dve6gouuhfn6h" path="res://EnemyData.gd" id="1"]
+[ext_resource type="SpriteFrames" uid="uid://xfqrq6jongmj" path="res://Sprite Frames/slime_frames.tres" id="2_0ihpn"]
 
 [resource]
 script = ExtResource("1")
@@ -10,12 +11,10 @@ current_hp = 30
 atk = 5
 def = 2
 renk = Color(0, 1, 0, 1)
-boyut = Vector2(64, 64)
+sprite_frames = ExtResource("2_0ihpn")
 acts = Array[String](["Check", "Konuş", "Sıvaz"])
 baris_kosullari = Array[String](["Konuş", "Sıvaz"])
 check_mesaji = "SLIME - HP 30 ATK 5 DEF 2
 Kaygan ve yumuşak bir yaratık."
 flavor_texts = Array[String](["Slime zıplamaya hazırlanıyor...", "Slime titreşiyor.", "Slime seni inceliyor.", "Slime kayıyor..."])
-pattern_turu = "basit"
-saldiri_gecikmesi = 2.0
 diyaloglar = Array[String](["Blorp...", "Shlrrp...", "~jiggles~"])

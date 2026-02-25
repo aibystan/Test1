@@ -4,14 +4,21 @@ extends Area2D
 var grid_x = 1 
 var grid_y = 1 
 
-# Node'ları güvenli bulmak için başta null yapıyoruz
 var grid_container = null
 var sprite = null
 
 # --- DURUMLAR ---
 var zipliyor = false
 var egiliyor = false
-var taban_y = 0.0 
+
+# --- ZIPLAMA FİZİĞİ (Mario tarzı) ---
+const ZIPLAMA_HIZI     = 320.0   # Başlangıç yukarı hızı
+const YERCEKIM         = 600.0   # Normal yerçekimi
+const HIZLI_YERCEKIM   = 2500.0  # Z bırakılınca / X basılınca
+const MAX_YUKSEKLIK    = 90.0    # Sprite'ın çıkabileceği max offset
+
+var _sprite_vel_y = 0.0          # Sprite'ın dikey hızı (px/s)
+var _z_basili = false
 
 # --- STATS ---
 var hp = 100
@@ -20,87 +27,77 @@ var gp = 0.0
 var max_gp = 100.0
 var is_grazing = false
 
-# --- AYARLAR ---
-var ziplama_gucu = 80.0
-var ziplama_suresi = 0.5
-
 func _ready():
-	# 1. Sprite Kontrolü
 	if has_node("Sprite2D"):
 		sprite = $Sprite2D
 	else:
 		printerr("HATA: Sprite2D bulunamadı!")
-	
-	# 2. Grid Container'ı Bul (Bir üst düğüme soruyoruz)
 	var parent = get_parent()
 	if parent.has_node("GridKonumlari"):
 		grid_container = parent.get_node("GridKonumlari")
 		call_deferred("konum_guncelle", false)
-	else:
-		print("UYARI: GridKonumlari bulunamadı. SavasSahnesi.tscn'den başlatmalısın.")
 
 func _process(delta):
-	if grid_container == null or sprite == null: return # Hata varsa çalışma
-
-	kontrol_et()
+	if grid_container == null or sprite == null: return
+	kontrol_et(delta)
 	gp_yonet(delta)
 
-func kontrol_et():
-	if zipliyor: return 
-	
-	var onceki_x = grid_x
-	var onceki_y = grid_y
-	
-	if Input.is_action_just_pressed("ui_right") and grid_x < 3:
-		grid_x += 1
-		sprite.flip_h = false 
-	elif Input.is_action_just_pressed("ui_left") and grid_x > 0:
-		grid_x -= 1
-		sprite.flip_h = true 
-	
-	# --- DİKEY HAREKET (Y EKSENİ) ---
-	# DÜZELTME: Bilgisayarda Y koordinatı aşağı doğru artar.
-	# Bu yüzden "Yukarı" gitmek için Y'yi AZALTMALIYIZ (grid_y -= 1).
-	
-	if Input.is_action_just_pressed("ui_up") and grid_y > 0: 
-		grid_y -= 1 # 0'a (Yukarıya) git
-	elif Input.is_action_just_pressed("ui_down") and grid_y < 3: 
-		grid_y += 1 # 2'ye (Aşağıya) git
-		
-	# Konum değiştiyse güncelle
-	if onceki_x != grid_x or onceki_y != grid_y:
-		konum_guncelle(true)
+func kontrol_et(delta):
+	# --- YATAY / GRID HAREKETİ ---
+	if not zipliyor:
+		var ox = grid_x; var oy = grid_y
+		if Input.is_action_just_pressed("ui_right") and grid_x < 3:
+			grid_x += 1; sprite.flip_h = false
+		elif Input.is_action_just_pressed("ui_left") and grid_x > 0:
+			grid_x -= 1; sprite.flip_h = true
+		if Input.is_action_just_pressed("ui_up") and grid_y > 0:
+			grid_y -= 1
+		elif Input.is_action_just_pressed("ui_down") and grid_y < 3:
+			grid_y += 1
+		if ox != grid_x or oy != grid_y:
+			konum_guncelle(true)
+		egil(Input.is_action_pressed("tus_x"))
 
-	# --- AKSİYONLAR ---
+	# --- ZIPLAMA BAŞLANGICI ---
 	if Input.is_action_just_pressed("tus_z") and not zipliyor and not egiliyor:
-		zipla()
-		
-	if Input.is_action_pressed("tus_x"):
-		egil(true)
-	else:
-		egil(false)
+		zipliyor = true
+		_sprite_vel_y = -ZIPLAMA_HIZI
+		_z_basili = true
+
+	if Input.is_action_just_released("tus_z"):
+		_z_basili = false
+
+	# --- HAVADA FİZİK ---
+	if zipliyor:
+		# Z bırakıldıysa veya X basılıysa hızlı yerçekimi
+		var yc = YERCEKIM
+		if not _z_basili or Input.is_action_pressed("tus_x"):
+			yc = HIZLI_YERCEKIM
+
+		_sprite_vel_y += yc * delta
+		sprite.position.y += _sprite_vel_y * delta
+
+		# Yere değdi mi?
+		if sprite.position.y >= 0.0:
+			sprite.position.y = 0.0
+			_sprite_vel_y = 0.0
+			zipliyor = false
+			_z_basili = false
+
+		# Max yükseklik sınırı
+		if sprite.position.y < -MAX_YUKSEKLIK:
+			sprite.position.y = -MAX_YUKSEKLIK
+			_sprite_vel_y = 0.0
 
 func konum_guncelle(animasyonlu: bool = false):
 	var hedef_isim = "Pos_" + str(grid_y) + "_" + str(grid_x)
-	
 	if grid_container.has_node(hedef_isim):
-		var hedef_node = grid_container.get_node(hedef_isim)
-		var hedef_pos = hedef_node.position
-		z_index = 10 - grid_y 
-		
+		var hedef_pos = grid_container.get_node(hedef_isim).position
+		z_index = 10 - grid_y
 		if animasyonlu:
-			var tween = create_tween()
-			tween.tween_property(self, "position", hedef_pos, 0.1).set_trans(Tween.TRANS_SINE)
+			create_tween().tween_property(self, "position", hedef_pos, 0.1).set_trans(Tween.TRANS_SINE)
 		else:
 			position = hedef_pos
-
-func zipla():
-	zipliyor = true
-	var tween = create_tween()
-	tween.tween_property(sprite, "position:y", -ziplama_gucu, ziplama_suresi / 2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	tween.tween_property(sprite, "position:y", 0.0, ziplama_suresi / 2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
-	await tween.finished
-	zipliyor = false
 
 func egil(durum):
 	if egiliyor == durum: return
@@ -110,7 +107,7 @@ func egil(durum):
 		sprite.position.y = 15
 	else:
 		sprite.scale.y = 1.0
-		sprite.position.y = 0
+		sprite.position.y = 0.0
 
 func gp_yonet(delta):
 	if is_grazing: gp += delta * 15.0
@@ -121,37 +118,13 @@ func hasar_al(miktar):
 	hp -= miktar
 	gp = 0.0
 
-# Mermiler bu fonksiyonu çağırıp hasar verip veremeyeceğini soracak
-# mermi_katmani -> 0: Alt, 1: Orta, 2: Üst
 func darbe_alir_mi(mermi_katmani: int) -> bool:
-	# -- GRAZE (SIYIRMA) KONTROLÜ --
-	# Mermi içimizden geçerken bu fonksiyon sürekli çağrılırsa Graze puanı artar
-	is_grazing = true 
-	
-	# -- ÇARPIŞMA MANTIĞI --
+	is_grazing = true
 	match mermi_katmani:
-		0: # ALT TABAKA (Yerden giden)
-			if zipliyor:
-				return false # Zıpladık, altımızdan geçti (ISKA)
-			else:
-				return true # Yerdeyiz (veya eğiliyoruz), ayağımıza çarptı (HASAR)
-		
-		1: # ORTA TABAKA (Gövdeden giden)
-			if egiliyor:
-				return false # Eğildik, üstümüzden geçti (ISKA) - Senin kuralın
-			elif zipliyor:
-				return false # Zıpladık, altımızdan geçti (ISKA)
-			else:
-				return true # Ayaktayız, göğsümüze çarptı (HASAR)
-		
-		2: # ÜST TABAKA (Havadan giden)
-			if zipliyor:
-				return true # Zıpladık, tam kafamıza çarptı (HASAR)
-			else:
-				return false # Yerdeyiz (Ayakta veya Eğik), kafamızın üstünden geçti (ISKA)
-	
+		0: return not zipliyor
+		1: return not egiliyor and not zipliyor
+		2: return zipliyor
 	return false
 
-# Mermi Area'dan çıkınca Graze biter
 func graze_bitti():
 	is_grazing = false

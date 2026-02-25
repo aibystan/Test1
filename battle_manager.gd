@@ -27,6 +27,7 @@ var suanki_faz: TurnFazi = TurnFazi.MENU
 
 # --- PLAYER DATA ---
 var player_characters: Array = []
+var karakter_nodelar: Array = []  # Savaştaki karakter sprite nodeları
 
 # Hasar havuzu: düşman saldırısından gelen hasarı hangi karakterden başlayarak dağıtacağız
 var hasar_dagilim_index: int = 0
@@ -37,10 +38,10 @@ var hasar_dagilim_index: int = 0
 
 # 1-4 düşman için sabit grid pozisyonları (ekran 640x360, düşman alanı y=100-240)
 const POZISYON_GRIDI = {
-	1: [Vector2(320, 100)],
-	2: [Vector2(210, 100), Vector2(430, 100)],
-	3: [Vector2(130, 100), Vector2(320, 100), Vector2(510, 100)],
-	4: [Vector2(110, 90), Vector2(270, 90), Vector2(390, 90), Vector2(540, 90)]
+	1: [Vector2(320, 70)],
+	2: [Vector2(210, 70), Vector2(430, 70)],
+	3: [Vector2(130, 70), Vector2(320, 70), Vector2(510, 70)],
+	4: [Vector2(110, 70), Vector2(270, 70), Vector2(390, 70), Vector2(540, 70)]
 }
 
 func _ready():
@@ -76,31 +77,44 @@ func savas_baslat(dusman_listesi: Array):
 
 	aktif_dusman_sayisi = dusmanlar.size()
 	await get_tree().create_timer(0.5).timeout
+	_karakterleri_spawn_et()
 	ilk_player_turn_basla()
 
 func spawn_dusman(dusman: EnemyData, _index: int, pozisyon: Vector2) -> Node2D:
-	const GW = 56   # Düşman genişliği
-	const GH = 56   # Düşman yüksekliği
+	const GW = 56
+	const GH = 56
 
 	var container = Node2D.new()
 	container.position = pozisyon
 
-	# Renkli kare (sprite placeholder)
-	var rect = ColorRect.new()
-	rect.size = Vector2(GW, GH)
-	rect.position = Vector2(-GW / 2, -GH / 2)
-	rect.color = dusman.renk
-	container.add_child(rect)
-
-	# İsim (üstte, küçük)
-	var isim_lbl = Label.new()
-	isim_lbl.text = dusman.isim
-	isim_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	isim_lbl.position = Vector2(-50, -GH / 2 - 18)
-	isim_lbl.custom_minimum_size = Vector2(100, 16)
-	var isim_font = isim_lbl.get_theme_default_font()
-	isim_lbl.add_theme_font_size_override("font_size", 10)
-	container.add_child(isim_lbl)
+	# AnimatedSprite > Sprite > ColorRect öncelik sırası
+	if dusman.sprite_frames:
+		var anim_spr = AnimatedSprite2D.new()
+		anim_spr.sprite_frames = dusman.sprite_frames
+		anim_spr.name = "AnimSprite"
+		# Boyut ayarı: frames'teki ilk frame'e göre ölçekle
+		var anim_isim = dusman.varsayilan_animasyon if dusman.varsayilan_animasyon != "" else "idle"
+		if dusman.sprite_frames.has_animation(anim_isim):
+			var frame_tex = dusman.sprite_frames.get_frame_texture(anim_isim, 0)
+			if frame_tex:
+				var tex_size = frame_tex.get_size()
+				var olcek = Vector2(float(GW) / tex_size.x, float(GH) / tex_size.y)
+				anim_spr.scale = olcek
+			anim_spr.play(anim_isim)
+		container.add_child(anim_spr)
+	elif dusman.sprite:
+		var spr = Sprite2D.new()
+		spr.texture = dusman.sprite
+		var tex_size = dusman.sprite.get_size()
+		var olcek = Vector2(float(GW) / tex_size.x, float(GH) / tex_size.y)
+		spr.scale = olcek
+		container.add_child(spr)
+	else:
+		var rect = ColorRect.new()
+		rect.size = Vector2(GW, GH)
+		rect.position = Vector2(-GW / 2, -GH / 2)
+		rect.color = dusman.renk
+		container.add_child(rect)
 
 	# Konuşma balonu (sağ üstte)
 	if ResourceLoader.exists("res://speech_bubble.tscn"):
@@ -122,6 +136,8 @@ func ilk_player_turn_basla():
 	_sonraki_aktif_karaktere_gec()
 
 func player_turn_basla():
+	if aktif_karakter_index == 0:
+		_karakterleri_goster()  # Sadece ilk tur başında fade-in
 	var karakter = player_characters[aktif_karakter_index]
 
 	# Baygınsa bu karakteri atla
@@ -270,9 +286,68 @@ func dusman_oldu(index: int):
 # DÜŞMAN TURN SİSTEMİ
 # ============================================================
 
+func _karakterleri_spawn_et():
+	# Önceki nodeları temizle
+	for n in karakter_nodelar:
+		if is_instance_valid(n): n.queue_free()
+	karakter_nodelar.clear()
+
+	var aktif = []
+	for k in player_characters:
+		if not k.get("baygin", false):
+			aktif.append(k)
+
+	# Pozisyonlar: 1 karakter ortada, 2 karakter yan yana
+	var pozlar = []
+	if aktif.size() == 1:
+		pozlar = [Vector2(315, 255)]
+	elif aktif.size() >= 2:
+		pozlar = [Vector2(280, 255), Vector2(355, 255)]
+
+	for i in range(min(aktif.size(), pozlar.size())):
+		var k = aktif[i]
+		var node = _karakter_node_olustur(k)
+		node.position = pozlar[i]
+		get_parent().add_child(node)
+		karakter_nodelar.append(node)
+
+func _karakter_node_olustur(k: Dictionary) -> Node2D:
+	var node = Node2D.new()
+	node.name = "BattleKarakter_" + k["isim"]
+
+	# Sprite veya renk kutusu
+	var sprite_tex = k.get("battle_sprite", null)
+	if sprite_tex:
+		var spr = Sprite2D.new()
+		spr.texture = sprite_tex
+		node.add_child(spr)
+	else:
+		var rect = ColorRect.new()
+		rect.size = Vector2(32, 48)
+		rect.position = Vector2(-16, -48)
+		rect.color = k.get("renk", Color(0.8, 0.4, 0.4))
+		node.add_child(rect)
+	return node
+
+func _karakterleri_goster():
+	for node in karakter_nodelar:
+		if is_instance_valid(node):
+			var tw = node.create_tween()
+			node.modulate.a = 0.0
+			node.visible = true
+			tw.tween_property(node, "modulate:a", 1.0, 0.4)
+
+func _karakterleri_gizle():
+	for node in karakter_nodelar:
+		if is_instance_valid(node):
+			var tw = node.create_tween()
+			tw.tween_property(node, "modulate:a", 0.0, 0.4)
+			tw.tween_callback(func(): if is_instance_valid(node): node.visible = false)
+
 func dusman_turn_basla():
 	suanki_durum = TurnDurumu.DUSMAN
 	suanki_faz = TurnFazi.GRID
+	_karakterleri_gizle()
 	dusman_turn_basladi.emit()
 	# Düşman turu boyunca metin kutusu KAPALI
 	if message_box:

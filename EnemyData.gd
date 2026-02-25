@@ -11,6 +11,9 @@ class_name EnemyData
 # --- GÖRSEL ---
 @export var renk: Color = Color.RED  # Placeholder renk
 @export var boyut: Vector2 = Vector2(64, 64)
+@export var sprite: Texture2D = null  # Sprite texture (null ise renk kullanılır)
+@export var sprite_frames: SpriteFrames = null  # AnimatedSprite için (sprite'den öncelikli)
+@export var varsayilan_animasyon: String = "idle"  # Başlangıç animasyonu
 
 # --- ACT SİSTEMİ ---
 # Her düşmanın kendine özel act seçenekleri

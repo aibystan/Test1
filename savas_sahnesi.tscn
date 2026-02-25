@@ -63,52 +63,52 @@ script = ExtResource("2_ow8yj")
 [node name="GridKonumlari" type="Node2D" parent="." unique_id=711576960]
 
 [node name="Pos_0_0" type="Marker2D" parent="GridKonumlari" unique_id=1121432473]
-position = Vector2(200, 64)
+position = Vector2(245, 115)
 
 [node name="Pos_0_1" type="Marker2D" parent="GridKonumlari" unique_id=300770561]
-position = Vector2(275, 64)
+position = Vector2(295, 115)
 
 [node name="Pos_0_2" type="Marker2D" parent="GridKonumlari" unique_id=1535594641]
-position = Vector2(352, 64)
+position = Vector2(345, 115)
 
 [node name="Pos_0_3" type="Marker2D" parent="GridKonumlari" unique_id=1367800854]
-position = Vector2(414, 63)
+position = Vector2(395, 115)
 
 [node name="Pos_1_0" type="Marker2D" parent="GridKonumlari" unique_id=295378148]
-position = Vector2(198, 138)
+position = Vector2(245, 165)
 
 [node name="Pos_1_1" type="Marker2D" parent="GridKonumlari" unique_id=1556862630]
-position = Vector2(275, 138)
+position = Vector2(295, 165)
 
 [node name="Pos_1_2" type="Marker2D" parent="GridKonumlari" unique_id=1146669830]
-position = Vector2(352, 138)
+position = Vector2(345, 165)
 
 [node name="Pos_1_3" type="Marker2D" parent="GridKonumlari" unique_id=731047708]
-position = Vector2(419, 138)
+position = Vector2(395, 165)
 
 [node name="Pos_2_0" type="Marker2D" parent="GridKonumlari" unique_id=662536023]
-position = Vector2(198, 212)
+position = Vector2(245, 215)
 
 [node name="Pos_2_1" type="Marker2D" parent="GridKonumlari" unique_id=941278685]
-position = Vector2(275, 212)
+position = Vector2(295, 215)
 
 [node name="Pos_2_2" type="Marker2D" parent="GridKonumlari" unique_id=1634629713]
-position = Vector2(352, 212)
+position = Vector2(345, 215)
 
 [node name="Pos_2_3" type="Marker2D" parent="GridKonumlari" unique_id=292102467]
-position = Vector2(419, 214)
+position = Vector2(395, 215)
 
 [node name="Pos_3_0" type="Marker2D" parent="GridKonumlari" unique_id=449032751]
-position = Vector2(199, 285)
+position = Vector2(245, 265)
 
 [node name="Pos_3_1" type="Marker2D" parent="GridKonumlari" unique_id=1190555645]
-position = Vector2(274, 285)
+position = Vector2(295, 265)
 
 [node name="Pos_3_2" type="Marker2D" parent="GridKonumlari" unique_id=1109009871]
-position = Vector2(354, 284)
+position = Vector2(345, 265)
 
 [node name="Pos_3_3" type="Marker2D" parent="GridKonumlari" unique_id=1884278728]
-position = Vector2(421, 285)
+position = Vector2(395, 265)
 
 [node name="SavasOyuncusu" parent="." unique_id=324930502 instance=ExtResource("2_urhhq")]
 position = Vector2(527, 195)
