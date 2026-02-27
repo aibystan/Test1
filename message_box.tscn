@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cblq18c672y23"]
 
 [ext_resource type="Script" uid="uid://clmnjrv4wyru5" path="res://message_box.gd" id="1"]
-[ext_resource type="FontFile" uid="uid://bjg66yxtkti5v" path="res://Fonts/card-master.otf" id="2_xf4lt"]
+[ext_resource type="FontFile" uid="uid://celi70wwix6ws" path="res://Fonts/vergilia.otf" id="2_xf4lt"]
 
 [node name="MessageBox" type="Panel" unique_id=832718018]
 offset_left = 8.0

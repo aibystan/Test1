@@ -91,10 +91,6 @@ func cursor_hareket(delta):
 		cursor_pozisyon = 0.0
 		yon = 1
 	
-	# Debug
-	if int(Time.get_ticks_msec()) % 500 == 0:  # Her 500ms'de bir
-		print("Cursor pozisyon: ", cursor_pozisyon)
-	
 	# Cursor pozisyonunu güncelle
 	if cursor and bar_bg:
 		cursor.position.x = cursor_pozisyon * bar_bg.size.x
@@ -118,21 +114,21 @@ func timing_kontrol():
 		kalite = "PERFECT"
 		carpan = 2.0
 		sonuc_label.text = "PERFECT!"
-		sonuc_label.modulate = Color(1, 1, 0)  # Sarı
+		sonuc_label.modulate = Color(1, 0.88, 0.1)
 		cursor.color = Color(1, 1, 0)
 	elif cursor_pozisyon >= good_baslangic and cursor_pozisyon <= good_bitis:
 		# GOOD
 		kalite = "GOOD"
 		carpan = 1.0
 		sonuc_label.text = "GOOD"
-		sonuc_label.modulate = Color(0, 1, 0)  # Yeşil
+		sonuc_label.modulate = Color(0.3, 1, 0.4)
 		cursor.color = Color(0, 1, 0)
 	else:
 		# MISS
 		kalite = "MISS"
 		carpan = 0.3  # Çok düşük hasar
-		sonuc_label.text = "MISS..."
-		sonuc_label.modulate = Color(1, 0, 0)  # Kırmızı
+		sonuc_label.text = "MISS"
+		sonuc_label.modulate = Color(1, 0.3, 0.3)
 		cursor.color = Color(1, 0, 0)
 	
 	print("Timing: " + kalite + " (x" + str(carpan) + ")")

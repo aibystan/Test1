@@ -18,7 +18,21 @@
 [ext_resource type="Resource" uid="uid://cn0l01683jfc1" path="res://Items/pasli_kilic.tres" id="14_f02we"]
 [ext_resource type="PackedScene" path="res://overworld_dusman.tscn" id="15_f02we"]
 [ext_resource type="Script" uid="uid://dve6gouuhfn6h" path="res://EnemyData.gd" id="16_1bcg4"]
-[ext_resource type="Resource" path="res://Enemies/enemy_slime.tres" id="17_1bcg4"]
+[ext_resource type="Resource" uid="uid://ccahubxfs61df" path="res://Enemies/enemy_slime.tres" id="17_1bcg4"]
+
+[sub_resource type="GDScript" id="GDScript_rxjqm"]
+script/source = "extends Node2D
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+"
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_pyigi"]
 load_path = "res://.godot/imported/tilemap_packed.png-7b301e6705a57389d2cd02d385b33920.ctex"
@@ -324,6 +338,7 @@ size = Vector2(23, 21)
 
 [node name="Overworld" type="Node2D" unique_id=1833744946]
 y_sort_enabled = true
+script = SubResource("GDScript_rxjqm")
 
 [node name="Zemin" type="TileMapLayer" parent="." unique_id=1054316624]
 z_index = -1

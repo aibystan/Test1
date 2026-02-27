@@ -119,7 +119,7 @@ func spawn_dusman(dusman: EnemyData, _index: int, pozisyon: Vector2) -> Node2D:
 	# Konuşma balonu (sağ üstte)
 	if ResourceLoader.exists("res://speech_bubble.tscn"):
 		var balon = load("res://speech_bubble.tscn").instantiate()
-		balon.position = Vector2(GW / 2, -GH / 2 - 60)
+		balon.position = Vector2(GW / 2, -GH / 2 - 20)
 		balon.set_size(Vector2(160, 55))
 		balon.name = "SpeechBubble"
 		container.add_child(balon)
@@ -138,6 +138,9 @@ func ilk_player_turn_basla():
 func player_turn_basla():
 	if aktif_karakter_index == 0:
 		_karakterleri_goster()  # Sadece ilk tur başında fade-in
+	# GP artışı için aktif karakter indexini player_node'a bildir
+	if player_node:
+		player_node.aktif_karakter_index = aktif_karakter_index
 	var karakter = player_characters[aktif_karakter_index]
 
 	# Baygınsa bu karakteri atla
@@ -370,7 +373,8 @@ func dusman_turn_basla():
 	dusman_turn_bitir()
 
 func dusman_konusma_goster():
-	var konusan_balon = null
+	# Tüm canlı düşmanları aynı anda konuştur
+	var balonlar = []
 	for dusman_dict in dusmanlar:
 		var data = dusman_dict["data"]
 		if not data.oldu_mu():
@@ -379,13 +383,16 @@ func dusman_konusma_goster():
 				var diyalog = data.sonraki_diyalog()
 				if diyalog != "":
 					balon.goster_liste(Array(diyalog.split("|")))
-					konusan_balon = balon
-			break
-
-	if konusan_balon != null:
-		await konusan_balon.konusma_bitti
-	else:
+					balonlar.append(balon)
+	# Tüm balonların bitmesini bekle (sayaç ile - sinyal kaçırma önlenir)
+	if balonlar.is_empty():
 		await get_tree().create_timer(0.3).timeout
+	else:
+		var biten = [0]  # Array: lambda içinden referansla değiştirilebilir
+		for balon in balonlar:
+			balon.konusma_bitti.connect(func(): biten[0] += 1)
+		while biten[0] < balonlar.size():
+			await get_tree().process_frame
 
 func dusman_pattern_calistir():
 	for dusman_dict in dusmanlar:
@@ -460,6 +467,9 @@ func savas_kazanildi():
 	# Victory screen göster
 	var victory_screen = get_tree().current_scene.get_node_or_null("BattleVictoryScreen")
 	if victory_screen:
+		# TimingBar'ı gizle
+		var tb = get_tree().current_scene.get_node_or_null("TimingBar")
+		if tb: tb.visible = false
 		victory_screen.goster(toplam_xp, toplam_gold)
 	else:
 		print("UYARI: Victory screen bulunamadı, overworld'e dönülüyor")

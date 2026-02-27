@@ -6,8 +6,8 @@
 [ext_resource type="PackedScene" uid="uid://bg0o4u0nfu6i0" path="res://battle_ui.tscn" id="3_vlb07"]
 [ext_resource type="PackedScene" uid="uid://43u4u2g8uk4i" path="res://timing_bar.tscn" id="4_ow8yj"]
 [ext_resource type="PackedScene" uid="uid://dv21t0v6edgd7" path="res://speech_bubble.tscn" id="6_vlb07"]
-[ext_resource type="PackedScene" path="res://battle_victory_screen.tscn" id="7_7j6gx"]
-[ext_resource type="FontFile" uid="uid://bjg66yxtkti5v" path="res://Fonts/card-master.otf" id="8_jbt3k"]
+[ext_resource type="PackedScene" uid="uid://cqi4te5gfqmlj" path="res://battle_victory_screen.tscn" id="7_7j6gx"]
+[ext_resource type="FontFile" uid="uid://celi70wwix6ws" path="res://Fonts/vergilia.otf" id="8_jbt3k"]
 [ext_resource type="PackedScene" uid="uid://cblq18c672y23" path="res://message_box.tscn" id="9_msgbox"]
 
 [sub_resource type="Shader" id="Shader_v5dfy"]

@@ -23,9 +23,9 @@ var _z_basili = false
 # --- STATS ---
 var hp = 100
 var qut = 170
-var gp = 0.0
 var max_gp = 100.0
 var is_grazing = false
+var aktif_karakter_index: int = 0  # battle_manager tarafından set edilir
 
 func _ready():
 	if has_node("Sprite2D"):
@@ -110,13 +110,14 @@ func egil(durum):
 		sprite.position.y = 0.0
 
 func gp_yonet(delta):
-	if is_grazing: gp += delta * 15.0
-	else: gp += delta * 2.0
-	if gp > max_gp: gp = max_gp
+	# Tüm karakterlerin GP'sini saniyede %1 artır
+	for k in Global.party_data:
+		if not k.get("baygin", false):
+			k["gp"] = min(k["gp"] + delta * 1.0, max_gp)
 
 func hasar_al(miktar):
 	hp -= miktar
-	gp = 0.0
+	# GP global.gd parti_hasar_al içinde sıfırlanıyor
 
 func darbe_alir_mi(mermi_katmani: int) -> bool:
 	is_grazing = true

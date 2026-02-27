@@ -31,6 +31,9 @@ func goster_liste(metinler: Array, _sure: float = 2.0):
 	_calistir()
 
 func _calistir():
+	# Metin hizalamasını zorla
+	mesaj_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	mesaj_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 	# Tüm metinleri sırayla göster
 	while _suanki_index < _metinler.size():
 		_tam_metin = str(_metinler[_suanki_index])

@@ -38,7 +38,8 @@ var party_data = [
 		"max_qut": 200,
 		"silah": null,
 		"zirh": null,
-		"baygin": false
+		"baygin": false,
+		"gp": 0.0
 	},
 	{
 		"isim": "Nina",
@@ -50,7 +51,8 @@ var party_data = [
 		"max_qut": 200,
 		"silah": null,
 		"zirh": null,
-		"baygin": false
+		"baygin": false,
+		"gp": 0.0
 	}
 ]
 
@@ -67,6 +69,7 @@ func parti_hasar_al(miktar: int, baslangic_index: int = 0) -> Array:
 		if not k["baygin"]:
 			var alinacak = min(kalan, k["hp"])
 			k["hp"] -= alinacak
+			k["gp"] = 0.0  # Hasar alınca GP sıfırla
 			kalan -= alinacak
 			etkilenenler.append({"isim": k["isim"], "hasar": alinacak})
 			if k["hp"] <= 0:
@@ -267,6 +270,7 @@ func oyunu_yukle(slot: int = 1):
 	return false
 
 func _ready():
+	get_tree().node_added.connect(_node_eklendi)
 	var elma = load("res://Items/elma.tres") 
 	var kilic = load("res://Items/pasli_kilic.tres")
 	
@@ -326,3 +330,11 @@ func esya_kusan(yeni_esya: ItemData) -> ItemData:
 		
 	print(karakter["isim"] + " kuşandı: " + yeni_esya.isim)
 	return eski_esya
+
+func _node_eklendi(node: Node):
+	if has_meta("savas_bitis_efekti") and node.name == "Player":
+		print("=== Efekt ekleniyor, parent: ", node.get_parent().name)
+		remove_meta("savas_bitis_efekti")
+		var efekt = load("res://savas_bitis_efekti.tscn").instantiate()
+		node.get_parent().add_child(efekt)
+		print("=== Efekt eklendi, layer: ", efekt.layer, " visible: ", efekt.visible)

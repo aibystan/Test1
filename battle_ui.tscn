@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bg0o4u0nfu6i0"]
 
 [ext_resource type="Script" uid="uid://cx7irsonxi6h5" path="res://battle_ui.gd" id="1"]
-[ext_resource type="FontFile" uid="uid://bjg66yxtkti5v" path="res://Fonts/card-master.otf" id="2_ilr4f"]
+[ext_resource type="FontFile" uid="uid://celi70wwix6ws" path="res://Fonts/vergilia.otf" id="2_j4rna"]
 
 [node name="BattleUI" type="CanvasLayer" unique_id=864144045]
 layer = 11
@@ -33,37 +33,37 @@ theme_override_constants/separation = 5
 [node name="SaldirBtn" type="Button" parent="AnaMenuPanel/MarginContainer/HBoxContainer" unique_id=36114406]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("2_ilr4f")
+theme_override_fonts/font = ExtResource("2_j4rna")
 theme_override_font_sizes/font_size = 16
-text = "Saldır"
+text = "Clash"
 
 [node name="SihirBtn" type="Button" parent="AnaMenuPanel/MarginContainer/HBoxContainer" unique_id=1263174437]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("2_ilr4f")
+theme_override_fonts/font = ExtResource("2_j4rna")
 theme_override_font_sizes/font_size = 16
-text = "Sihir"
+text = "Magic"
 
 [node name="EylemBtn" type="Button" parent="AnaMenuPanel/MarginContainer/HBoxContainer" unique_id=219072796]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("2_ilr4f")
+theme_override_fonts/font = ExtResource("2_j4rna")
 theme_override_font_sizes/font_size = 16
-text = "Eylem"
+text = "Moves"
 
 [node name="ItemBtn" type="Button" parent="AnaMenuPanel/MarginContainer/HBoxContainer" unique_id=282413704]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("2_ilr4f")
+theme_override_fonts/font = ExtResource("2_j4rna")
 theme_override_font_sizes/font_size = 16
-text = "İtem"
+text = "Stuff"
 
 [node name="InsafBtn" type="Button" parent="AnaMenuPanel/MarginContainer/HBoxContainer" unique_id=1343622410]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("2_ilr4f")
+theme_override_fonts/font = ExtResource("2_j4rna")
 theme_override_font_sizes/font_size = 16
-text = "İnsaf"
+text = "Peace"
 
 [node name="HedefPanel" type="Panel" parent="." unique_id=196935677]
 visible = false
@@ -86,7 +86,7 @@ theme_override_constants/margin_bottom = 8
 
 [node name="Label" type="Label" parent="HedefPanel/MarginContainer" unique_id=1763771739]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("2_ilr4f")
+theme_override_fonts/font = ExtResource("2_j4rna")
 theme_override_font_sizes/font_size = 16
 text = "Hedef:"
 
@@ -112,6 +112,6 @@ theme_override_constants/margin_bottom = 8
 [node name="Label" type="Label" parent="ActPanel/MarginContainer" unique_id=1894403749]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("2_ilr4f")
+theme_override_fonts/font = ExtResource("2_j4rna")
 theme_override_font_sizes/font_size = 16
 text = "Act:"

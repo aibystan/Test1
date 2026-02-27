@@ -80,7 +80,16 @@ func _ready():
 	_menu_hedef_y = baslangic_y
 	_animasyon_aktif = true
 
+var _gp_guncelle_zamani = 0.0
+
 func _process(delta):
+	# GP'yi her 0.1 saniyede bir güncelle (düşman turu)
+	_gp_guncelle_zamani += delta
+	if _gp_guncelle_zamani >= 0.1:
+		_gp_guncelle_zamani = 0.0
+		if battle_manager and battle_manager.player_node and battle_manager.player_node.visible:
+			_gp_label_guncelle()
+	
 	if not _animasyon_aktif:
 		return
 
@@ -293,6 +302,14 @@ func turn_menusu_goster(_k: Dictionary):
 	ana_menu_guncelle()
 	panelleri_goster()
 
+func _gp_label_guncelle():
+	var node_isimler = ["Karakter1", "Karakter2"]
+	for i in range(node_isimler.size()):
+		var p = stats_panel.get_node_or_null("MarginContainer/HBoxContainer/" + node_isimler[i])
+		if p and p.visible and i < Global.party_data.size():
+			var gp_deger = int(Global.party_data[i].get("gp", 0.0))
+			p.get_node("GPLabel").text = "GP %d%%" % gp_deger
+
 func stat_guncelle():
 	# Karakter sayısını battle_manager'dan al
 	var karakter_sayisi = 2
@@ -319,7 +336,8 @@ func _stat_yaz(ki: int, node_isim: String):
 	p.get_node("IsimLabel").text = k["isim"] + (" 💀" if baygin else "")
 	p.get_node("HPLabel").text   = "HP %d/%d" % [k["hp"], k["max_hp"]]
 	p.get_node("QutLabel").text  = "QUT %d/%d" % [k.get("qut", 0), k.get("max_qut", 200)]
-	p.get_node("GPLabel").text   = "GP %d%%" % Global.graze_points
+	var gp_deger = int(k.get("gp", 0.0))
+	p.get_node("GPLabel").text   = "GP %d%%" % gp_deger
 	p.modulate = Color(0.5, 0.5, 0.5) if baygin else Color(1, 1, 1)
 
 # --- HEDEF / ACT ---

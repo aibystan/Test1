@@ -12,9 +12,9 @@ atk = 5
 def = 2
 renk = Color(0, 1, 0, 1)
 sprite_frames = ExtResource("2_0ihpn")
-acts = Array[String](["Check", "Konuş", "Sıvaz"])
-baris_kosullari = Array[String](["Konuş", "Sıvaz"])
+acts = Array[String](["Check", "Talk", "Jiggle"])
+baris_kosullari = Array[String](["Talk", "Jiggle"])
 check_mesaji = "SLIME - HP 30 ATK 5 DEF 2
 Kaygan ve yumuşak bir yaratık."
-flavor_texts = Array[String](["Slime zıplamaya hazırlanıyor...", "Slime titreşiyor.", "Slime seni inceliyor.", "Slime kayıyor..."])
+flavor_texts = Array[String](["Slime is getting ready to jump!", "Slime does a thing.", "Slime inspects you.", "Slime is sliding..."])
 diyaloglar = Array[String](["Blorp...", "Shlrrp...", "~jiggles~"])

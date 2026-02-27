@@ -90,6 +90,10 @@ func savas_basla():
 	savaş_basladi = true
 	takip_ediyor = false
 	velocity = Vector2.ZERO
+	# Oyuncuyu durdur
+	if player:
+		player.velocity = Vector2.ZERO
+		player.set_physics_process(false)
 	
 	if dusman_listesi.size() > 0:
 		# Mevcut sahneyi ve oyuncu pozisyonunu kaydet
@@ -104,8 +108,10 @@ func savas_basla():
 		# Düşman listesini kaydet
 		Global.set_meta("battle_enemies", dusman_listesi)
 		
-		await get_tree().create_timer(0.3).timeout
-		get_tree().change_scene_to_file("res://savas_sahnesi.tscn")
+		# Encounter efektini oynat, sonra savaş sahnesine geç
+		var efekt = load("res://encounter_efekti.tscn").instantiate()
+		get_tree().current_scene.add_child(efekt)
+		efekt.oynat("res://savas_sahnesi.tscn")
 	else:
 		print("HATA: Düşman listesi boş!")
 		savaş_basladi = false

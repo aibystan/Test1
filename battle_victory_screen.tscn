@@ -12,51 +12,91 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.8)
+color = Color(0, 0, 0, 0.88)
 
-[node name="Panel" type="Panel" parent="."]
+[node name="IcerikContainer" type="VBoxContainer" parent="."]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -250.0
-offset_top = -120.0
-offset_right = 250.0
-offset_bottom = 120.0
+offset_left = -220.0
+offset_top = -110.0
+offset_right = 220.0
+offset_bottom = 110.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 14
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = -20.0
-offset_bottom = -20.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 20
-
-[node name="KazanmaLabel" type="Label" parent="Panel/VBoxContainer"]
+[node name="KazanmaLabel" type="Label" parent="IcerikContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 36
-text = "You Won!"
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 42
+text = "Zafer!"
 horizontal_alignment = 1
-vertical_alignment = 1
 
-[node name="OdulLabel" type="Label" parent="Panel/VBoxContainer"]
+[node name="CizgiUst" type="ColorRect" parent="IcerikContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "You gained 50 XP and 100 Gold."
-horizontal_alignment = 1
-vertical_alignment = 1
+custom_minimum_size = Vector2(0, 2)
+color = Color(1, 0.85, 0.2, 0.5)
 
-[node name="DevamLabel" type="Label" parent="Panel/VBoxContainer"]
+[node name="OdulContainer" type="HBoxContainer" parent="IcerikContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="XPKutusu" type="VBoxContainer" parent="IcerikContainer/OdulContainer"]
+layout_mode = 2
+
+[node name="XPIcerik" type="VBoxContainer" parent="IcerikContainer/OdulContainer/XPKutusu"]
+theme_override_constants/separation = 2
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="XPBaslik" type="Label" parent="IcerikContainer/OdulContainer/XPKutusu/XPIcerik"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "TECRÜBE"
+horizontal_alignment = 1
+
+[node name="XPDeger" type="Label" parent="IcerikContainer/OdulContainer/XPKutusu/XPIcerik"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 1, 0.85, 1)
+theme_override_font_sizes/font_size = 26
+text = "+0"
+horizontal_alignment = 1
+
+[node name="GoldKutusu" type="VBoxContainer" parent="IcerikContainer/OdulContainer"]
+layout_mode = 2
+
+[node name="GoldIcerik" type="VBoxContainer" parent="IcerikContainer/OdulContainer/GoldKutusu"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="GoldBaslik" type="Label" parent="IcerikContainer/OdulContainer/GoldKutusu/GoldIcerik"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "ALTIN"
+horizontal_alignment = 1
+
+[node name="GoldDeger" type="Label" parent="IcerikContainer/OdulContainer/GoldKutusu/GoldIcerik"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.4, 1)
+theme_override_font_sizes/font_size = 26
+text = "+0"
+horizontal_alignment = 1
+
+[node name="CizgiAlt" type="ColorRect" parent="IcerikContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 2)
+color = Color(1, 0.85, 0.2, 0.5)
+
+[node name="DevamLabel" type="Label" parent="IcerikContainer"]
 visible = false
 layout_mode = 2
-text = "(Press Z to continue)"
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 11
+text = "[ Z'ye bas ]"
 horizontal_alignment = 1
-vertical_alignment = 1
