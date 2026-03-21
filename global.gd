@@ -336,5 +336,5 @@ func _node_eklendi(node: Node):
 		print("=== Efekt ekleniyor, parent: ", node.get_parent().name)
 		remove_meta("savas_bitis_efekti")
 		var efekt = load("res://savas_bitis_efekti.tscn").instantiate()
-		node.get_parent().add_child(efekt)
-		print("=== Efekt eklendi, layer: ", efekt.layer, " visible: ", efekt.visible)
+		get_tree().root.add_child(efekt)
+		print("=== Efekt root'a eklendi, layer: ", efekt.layer, " visible: ", efekt.visible)
